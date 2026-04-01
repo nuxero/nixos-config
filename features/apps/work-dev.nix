@@ -23,7 +23,7 @@
       # Dev Tools & Modern CLI
       kiro
       kiro-cli
-      vim wget btop eza bat
+      vim wget btop eza bat fastfetch
 
       # Multimedia
       exaile
