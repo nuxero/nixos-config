@@ -1,0 +1,16 @@
+{ config, pkgs, ... }:
+
+{
+  home-manager.users.hector.home.packages = with pkgs; [
+    # Educational
+    gcompris      # 100+ educational activities
+    tuxmath       # Math arcade game
+    tuxtype       # Typing tutor
+    tuxpaint      # Award-winning drawing program for kids
+    kanagram      # Anagram puzzle game
+    
+    # Casual/Kid-Friendly Gaming
+    supertuxkart  # Mario Kart alternative
+    supertux      # Super Mario alternative
+  ];
+}
