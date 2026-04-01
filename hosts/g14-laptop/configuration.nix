@@ -12,6 +12,7 @@
       inputs.home-manager.nixosModules.home-manager
       ../../features/hardware/asus-nvidia.nix
       ../../features/desktop/plasma.nix
+      ../../features/desktop/plymouth.nix
       ../../features/apps/audio-production.nix
       ../../features/apps/gaming.nix
       ../../features/apps/work-dev.nix
