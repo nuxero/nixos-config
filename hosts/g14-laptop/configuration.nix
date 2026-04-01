@@ -26,6 +26,11 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Automated maintenance
+  # Automated Maintenance
+  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
+  nix.settings.auto-optimise-store = true;
+
   boot.initrd.luks.devices."luks-5c82c1ce-a9e8-4502-a767-baa1834b7b71".device = "/dev/disk/by-uuid/5c82c1ce-a9e8-4502-a767-baa1834b7b71";
   networking.hostName = "g14-laptop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -53,12 +58,6 @@
     LC_PAPER = "es_SV.UTF-8";
     LC_TELEPHONE = "es_SV.UTF-8";
     LC_TIME = "es_SV.UTF-8";
-  };
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
   };
 
   # Enable CUPS to print documents.

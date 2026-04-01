@@ -8,6 +8,7 @@
     heroic
     gopher64
     protonup-qt 
-    mangohud 
+    mangohud
+    antimicrox
   ];
 }
