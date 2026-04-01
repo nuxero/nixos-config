@@ -31,7 +31,7 @@
 
     # --- CLI & Dotfiles Management ---
     
-    programs.git.settings = {
+    programs.git = {
       enable = true;
       userName = "Hector Zelaya";
       userEmail = "inge.zelaya@gmail.com";
