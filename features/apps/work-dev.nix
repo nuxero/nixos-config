@@ -89,17 +89,13 @@
       nix-direnv.enable = true;
     };
 
-    # Autostart Maestral (GUI and Tray Icon)
-    systemd.user.services.maestral-gui = {
-      Unit = { Description = "Maestral Dropbox GUI"; };
-      Service = { 
-        ExecStart = "${pkgs.maestral-gui}/bin/maestral-gui"; 
-        Restart = "on-failure"; 
-      };
-      Install = { 
-        # Starts when your desktop environment loads, rather than just on boot
-        WantedBy = [ "graphical-session.target" ]; 
-      };
-    };
+    # Autostart Maestral via XDG (Plasma picks this up natively)
+    xdg.configFile."autostart/maestral-gui.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Maestral
+      Exec=maestral-gui
+      X-GNOME-Autostart-enabled=true
+    '';
   };
 }
