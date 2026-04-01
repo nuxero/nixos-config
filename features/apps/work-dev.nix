@@ -24,6 +24,10 @@
       kiro
       kiro-cli
       vim wget btop eza bat
+
+      # Multimedia
+      exaile
+      vlc
       
       # NH Tooling
       nh nix-output-monitor nvd nix-index
