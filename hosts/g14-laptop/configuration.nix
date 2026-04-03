@@ -11,6 +11,7 @@
       inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
       inputs.home-manager.nixosModules.home-manager
       ../../features/hardware/asus-nvidia.nix
+      ../../features/hardware/bluetooth.nix
       ../../features/desktop/plasma.nix
       ../../features/desktop/plymouth.nix
       ../../features/apps/audio-production.nix
