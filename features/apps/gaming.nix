@@ -9,6 +9,5 @@
     gopher64
     protonup-qt 
     mangohud
-    antimicrox
   ];
 }

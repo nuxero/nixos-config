@@ -94,7 +94,8 @@
       [Desktop Entry]
       Type=Application
       Name=Maestral
-      Exec=maestral-gui
+      Exec=${pkgs.bash}/bin/bash -c "sleep 5 && ${pkgs.maestral-gui}/bin/maestral-gui"
+      Terminal=false
       X-GNOME-Autostart-enabled=true
     '';
   };
