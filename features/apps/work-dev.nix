@@ -13,7 +13,6 @@
       # Work & Cloud
       maestral
       maestral-gui
-      firefox
       slack
       google-chrome
       dbeaver-bin
@@ -32,6 +31,13 @@
       # NH Tooling
       nh nix-output-monitor nvd nix-index
     ];
+
+    programs.firefox = {
+      enable = true;
+      nativeMessagingHosts = [
+        pkgs.kdePackages.plasma-browser-integration
+      ];
+    };
 
     # --- CLI & Dotfiles Management ---
     
