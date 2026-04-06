@@ -17,6 +17,9 @@
       ../../features/desktop/plymouth/system.nix
       ../../features/apps/audio-production/system.nix
       ../../features/apps/work-dev/system.nix
+      (import ../../features/apps/automated-qa/system.nix {
+        qaUsers = [ "erika" ];
+      })
     ];
 
   # Bootloader.
@@ -86,7 +89,10 @@
       imports = [
         ../../features/desktop/plasma/user.nix
         ../../features/apps/audio-production/user.nix
-        ../../features/apps/work-dev/user.nix
+        (import ../../features/apps/work-dev/user.nix {
+          gitUserName  = "Hector Zelaya";
+          gitUserEmail = "inge.zelaya@gmail.com";
+        })
         ../../features/apps/kids/user.nix
       ];
       home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
@@ -95,7 +101,11 @@
     users.erika = {
       imports = [
         ../../features/desktop/plasma/user.nix
-        ../../features/apps/work-dev/user.nix
+        (import ../../features/apps/work-dev/user.nix {
+          gitUserName  = "Erika Cubias";
+          gitUserEmail = "erilis@gmail.com";
+        })
+        ../../features/apps/automated-qa/user.nix
         ../../features/apps/kids/user.nix
       ];
       home.sessionVariables.NH_FLAKE = "/home/erika/nixos-config";

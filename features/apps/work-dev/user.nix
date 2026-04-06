@@ -1,3 +1,5 @@
+{ gitUserName, gitUserEmail }:
+
 { config, pkgs, ... }:
 
 {
@@ -35,8 +37,8 @@
 
   programs.git = {
     enable = true;
-    userName = "Hector Zelaya";
-    userEmail = "inge.zelaya@gmail.com";
+    userName = gitUserName;
+    userEmail = gitUserEmail;
     aliases = {
       ci = "commit";
       co = "checkout";

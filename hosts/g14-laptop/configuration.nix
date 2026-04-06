@@ -86,7 +86,10 @@
         ../../features/desktop/plasma/user.nix
         ../../features/apps/audio-production/user.nix
         ../../features/apps/gaming/user.nix
-        ../../features/apps/work-dev/user.nix
+        (import ../../features/apps/work-dev/user.nix {
+          gitUserName  = "Hector Zelaya";
+          gitUserEmail = "inge.zelaya@gmail.com";
+        })
         #../../features/apps/kids/user.nix
       ];
       home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
