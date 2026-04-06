@@ -21,7 +21,7 @@
     vlc
 
     # NH Tooling
-    nh nix-output-monitor nvd nix-index
+    nh nix-output-monitor nvd
   ];
 
   programs.firefox = {

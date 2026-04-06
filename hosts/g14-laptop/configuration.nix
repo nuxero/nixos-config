@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
       inputs.home-manager.nixosModules.home-manager
+      inputs.nix-index-database.nixosModules.nix-index
 
       # System-level features
       ../../features/hardware/asus-nvidia/system.nix
