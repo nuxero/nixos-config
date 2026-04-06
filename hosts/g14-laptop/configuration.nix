@@ -1,6 +1,6 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# and in the NixOS manual (accessible by running 'nixos-help').
 
 { config, pkgs, inputs, ... }:
 
@@ -10,13 +10,15 @@
       ./hardware-configuration.nix
       inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
       inputs.home-manager.nixosModules.home-manager
-      ../../features/hardware/asus-nvidia.nix
-      ../../features/hardware/bluetooth.nix
-      ../../features/desktop/plasma.nix
-      ../../features/desktop/plymouth.nix
-      ../../features/apps/audio-production.nix
-      ../../features/apps/gaming.nix
-      ../../features/apps/work-dev.nix
+
+      # System-level features
+      ../../features/hardware/asus-nvidia/system.nix
+      ../../features/hardware/bluetooth/system.nix
+      ../../features/desktop/plasma/system.nix
+      ../../features/desktop/plymouth/system.nix
+      ../../features/apps/audio-production/system.nix
+      ../../features/apps/gaming/system.nix
+      ../../features/apps/work-dev/system.nix
     ];
 
   # Bootloader.
@@ -28,7 +30,6 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # Automated maintenance
   # Automated Maintenance
   nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
   nix.settings.auto-optimise-store = true;
@@ -68,7 +69,7 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.hector = {
     isNormalUser = true;
     description = "Hector Zelaya";
@@ -78,10 +79,19 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.hector.home.stateVersion = "25.11";
+    users.hector = {
+      imports = [
+        ../../features/hardware/asus-nvidia/user.nix
+        ../../features/desktop/plasma/user.nix
+        ../../features/apps/audio-production/user.nix
+        ../../features/apps/gaming/user.nix
+        ../../features/apps/work-dev/user.nix
+        #../../features/apps/kids/user.nix
+      ];
+      home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
+      home.stateVersion = "25.11";
+    };
   };
-
-  environment.variables.NH_FLAKE = "/home/hector/nixos-config";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -104,7 +114,7 @@
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).

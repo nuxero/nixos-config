@@ -21,10 +21,4 @@
     { domain = "@audio"; item = "rtprio"; type = "-"; value = "99"; }
     { domain = "@audio"; item = "memlock"; type = "-"; value = "unlimited"; }
   ];
-
-  home-manager.users.hector.home.packages = with pkgs; [
-    reaper
-    vital
-    decent-sampler
-  ];
 }
