@@ -11,6 +11,9 @@
 
     # Web test automation drivers
     chromedriver
+
+    # Mobile test automation
+    android-tools  # adb + fastboot (includes udev rules)
   ];
 
   # Ensure JAVA_HOME is set for IntelliJ and Maven

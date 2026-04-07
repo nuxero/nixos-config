@@ -19,7 +19,9 @@
       ../../features/desktop/plymouth/system.nix
       ../../features/apps/audio-production/system.nix
       ../../features/apps/gaming/system.nix
-      ../../features/apps/work-dev/system.nix
+      (import ../../features/apps/work-dev/system.nix {
+        polkitOwners = [ "hector" ];
+      })
     ];
 
   # Bootloader.

@@ -16,9 +16,8 @@
       ../../features/desktop/plasma/system.nix
       ../../features/desktop/plymouth/system.nix
       ../../features/apps/audio-production/system.nix
-      ../../features/apps/work-dev/system.nix
-      (import ../../features/apps/automated-qa/system.nix {
-        qaUsers = [ "erika" ];
+      (import ../../features/apps/work-dev/system.nix {
+        polkitOwners = [ "hector" "erika" ];
       })
     ];
 
