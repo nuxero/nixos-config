@@ -3,7 +3,7 @@
 {
   home.packages = with pkgs; [
     # IDE — Community Edition (free, no license needed)
-    jetbrains.idea-community
+    jetbrains.idea-oss
 
     # Java toolchain
     jdk21
