@@ -21,6 +21,7 @@
     # Multimedia
     exaile
     vlc
+    obs-studio
 
     # NH Tooling
     nh nix-output-monitor nvd
