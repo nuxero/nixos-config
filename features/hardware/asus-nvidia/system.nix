@@ -6,6 +6,9 @@
     "pcie_aspm.policy=default"        # override powersupersave — NVIDIA GPUs crash with aggressive ASPM
     "mem_sleep_default=s2idle"         # override deep — avoids amdgpu DMCUB errors on suspend
     "amdgpu.dcdebugmask=0x10"         # disable PSR — fixes DMCUB diagnostic data errors
+    "nvidia.NVreg_EnableGpuFirmware=0" # disable GSP firmware — GSP never initializes, causing heartbeat timeouts → sync floods
+    "nvidia_modeset.vblank_sem_control=0" # fix KWin Wayland black screen + cursor-only after suspend resume
+    "pcie_ports=native"                   # DIAGNOSTIC: force kernel AER driver to log PCIe errors — remove once sync flood source is identified
   ];
 
   services.asusd.enable = true;
@@ -19,7 +22,7 @@
     modesetting.enable = true;
     powerManagement.enable = true;
     powerManagement.finegrained = false;  # supergfxd handles RTD3 PM; having both causes GSP firmware crash
-    open = true;
+    open = false;  # proprietary modules — open modules have broken GSP on this GPU (RTX 4060 Laptop)
     prime = {
       offload.enable = true;
       offload.enableOffloadCmd = true;
