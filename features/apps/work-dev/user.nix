@@ -21,7 +21,7 @@
     # Multimedia
     exaile
     vlc
-    obs-studio
+    obs-studio obs-studio-plugins.obs-backgroundremoval
 
     # NH Tooling
     nh nix-output-monitor nvd
