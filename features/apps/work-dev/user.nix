@@ -21,11 +21,17 @@
     # Multimedia
     exaile
     vlc
-    obs-studio obs-studio-plugins.obs-backgroundremoval
 
     # NH Tooling
     nh nix-output-monitor nvd
   ];
+
+  programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      obs-backgroundremoval
+    ];
+  };
 
   programs.firefox = {
     enable = true;
