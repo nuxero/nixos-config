@@ -33,6 +33,9 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Disable NVMe APST to prevent controller resets on Samsung 990 EVO Plus.
+  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
+
   # Automated Maintenance
   nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
   nix.settings.auto-optimise-store = true;
