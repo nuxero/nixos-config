@@ -13,7 +13,6 @@
     "nvidia.NVreg_EnableGpuFirmware=0"   # disable GSP firmware — GSP never initializes, causing heartbeat timeouts
     "nvidia_modeset.vblank_sem_control=0" # fix KWin Wayland black screen + cursor-only after suspend resume
     "nvme_core.default_ps_max_latency_us=0" # disable NVMe APST — prevents Samsung 990 EVO Plus controller resets
-    "pcie_ports=native"                   # DIAGNOSTIC: keep AER logging until sync flood source is confirmed — remove once stable
   ];
 
   services.asusd.enable = true;
