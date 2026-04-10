@@ -30,11 +30,12 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Use LTS kernel — more stable with NVIDIA proprietary drivers on hybrid GPU.
+  boot.kernelPackages = pkgs.linuxPackages;
 
-  # Disable NVMe APST to prevent controller resets on Samsung 990 EVO Plus.
-  boot.kernelParams = [ "nvme_core.default_ps_max_latency_us=0" ];
+  # Monitor NVMe health (Samsung 990 EVO Plus has intermittent controller crashes).
+  services.smartd.enable = true;
+  environment.systemPackages = [ pkgs.smartmontools ];
 
   # Automated Maintenance
   nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
