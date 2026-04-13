@@ -37,11 +37,16 @@
   services.smartd.enable = true;
   environment.systemPackages = [ pkgs.smartmontools ];
 
-  # Automated Maintenance
-  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 7d"; };
+  # Automated Maintenance — keep 30d to ensure rollback generations survive
+  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 30d"; };
   nix.settings.auto-optimise-store = true;
 
   boot.initrd.luks.devices."luks-5c82c1ce-a9e8-4502-a767-baa1834b7b71".device = "/dev/disk/by-uuid/5c82c1ce-a9e8-4502-a767-baa1834b7b71";
+
+  # Enable TRIM on LUKS + ext4 for SSD longevity (Samsung 990 EVO Plus).
+  # allowDiscards passes TRIM through the LUKS layer; fstrim runs weekly.
+  boot.initrd.luks.devices."luks-372ebe08-549c-43f5-8c14-3181293a1380".allowDiscards = true;
+  services.fstrim.enable = true;
   networking.hostName = "g14-laptop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
