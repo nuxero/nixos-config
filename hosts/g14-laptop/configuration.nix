@@ -15,6 +15,7 @@
       # System-level features
       ../../features/hardware/asus-nvidia/system.nix
       ../../features/hardware/bluetooth/system.nix
+      ../../features/hardware/printing/system.nix
       ../../features/desktop/plasma/system.nix
       ../../features/desktop/plymouth/system.nix
       ../../features/apps/audio-production/system.nix
@@ -75,9 +76,6 @@
     LC_TIME = "es_SV.UTF-8";
   };
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
@@ -85,7 +83,7 @@
   users.users.hector = {
     isNormalUser = true;
     description = "Hector Zelaya";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" "scanner" "lp" ];
   };
 
   home-manager = {
