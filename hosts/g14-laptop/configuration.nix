@@ -31,8 +31,7 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
-  # Use LTS kernel — more stable with NVIDIA proprietary drivers on hybrid GPU.
-  boot.kernelPackages = pkgs.linuxPackages;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Monitor NVMe health (Samsung 990 EVO Plus has intermittent controller crashes).
   services.smartd.enable = true;
