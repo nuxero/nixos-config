@@ -37,6 +37,14 @@
   services.smartd.enable = true;
   environment.systemPackages = [ pkgs.smartmontools pkgs.lm_sensors ];
 
+  # TEMPORARY: Capture kernel panics that the journal misses.
+  # printk.always_kmsg_dump tells the kernel to write dmesg to pstore on panic.
+  # systemd-pstore archives /sys/fs/pstore/ on boot for later analysis.
+  # After a silent crash, check: ls /var/lib/systemd/pstore/ or journalctl -b 0 --grep pstore
+  # Remove once silent crashes are diagnosed.
+  boot.kernelParams = [ "printk.always_kmsg_dump=Y" ];
+  systemd.services.systemd-pstore.wantedBy = [ "multi-user.target" ];
+
   # TEMPORARY: Log CPU/GPU/NVMe temps every 30s — survives hard power-off for post-crash analysis.
   # Added to diagnose whether Apr 13 freezes are thermal or MES firmware bug.
   # Remove once root cause is confirmed.
