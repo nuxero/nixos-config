@@ -1,11 +1,17 @@
 { config, pkgs, ... }:
 
 {
-  # CUPS printing with Canon PIXMA G-series drivers
   services.printing.enable = true;
-  services.printing.drivers = [ pkgs.cnijfilter2 ];
+  services.printing.drivers = [
+    pkgs.gutenprint
+    pkgs.gutenprintBin
+  ];
 
-  # Scanner support (SANE + driverless eSCL/AirScan)
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+  };
+
   hardware.sane.enable = true;
   hardware.sane.extraBackends = [ pkgs.sane-airscan ];
 }
