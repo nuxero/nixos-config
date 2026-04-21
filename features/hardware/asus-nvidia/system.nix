@@ -5,7 +5,11 @@
   # shared.nix unconditionally sets mem_sleep_default=deep and pcie_aspm.policy=powersupersave;
   # for duplicate kernel params the last value wins, so appending our values is correct.
   boot.kernelParams = [
+    "pcie_aspm.policy=performance"        # TEMPORARY: disable all PCIe ASPM power saving — testing if Samsung 990 EVO Plus
+                                          # PCIe link negotiation causes silent freezes. Overrides policy=default below.
+                                          # Remove and revert to policy=default once SSD is confirmed/ruled out as cause.
     "pcie_aspm.policy=default"            # override powersupersave — NVIDIA GPUs crash with aggressive ASPM
+                                          # (currently overridden by policy=performance above)
     "mem_sleep_default=s2idle"            # override deep — avoids amdgpu DMCUB errors on suspend
     "amdgpu.dcdebugmask=0x10"            # disable PSR — fixes DMCUB diagnostic data errors
                                           # REVISIT: increases power draw; PSR bug may be fixed in kernel 6.13.8+, re-test periodically
