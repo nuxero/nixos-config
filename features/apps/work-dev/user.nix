@@ -21,6 +21,7 @@
     # Multimedia
     exaile
     vlc
+    yt-dlp
 
     # NH Tooling
     nh nix-output-monitor nvd
