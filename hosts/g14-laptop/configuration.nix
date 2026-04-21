@@ -82,8 +82,10 @@
 
   # Enable TRIM on LUKS + ext4 for SSD longevity (Samsung 990 EVO Plus).
   # allowDiscards passes TRIM through the LUKS layer; fstrim runs weekly.
-  boot.initrd.luks.devices."luks-372ebe08-549c-43f5-8c14-3181293a1380".allowDiscards = true;
-  services.fstrim.enable = true;
+  # TEMPORARILY DISABLED: Samsung NVMe controller crashes (CSTS=0x3) may be triggered by TRIM.
+  # Re-enable once pcie_aspm.policy=performance is confirmed to fix the controller crashes.
+  # boot.initrd.luks.devices."luks-372ebe08-549c-43f5-8c14-3181293a1380".allowDiscards = true;
+  # services.fstrim.enable = true;
   networking.hostName = "g14-laptop"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
