@@ -4,8 +4,6 @@
   imports = [
     ./hardware-configuration.nix
     inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
-    inputs.home-manager.nixosModules.home-manager
-    inputs.nix-index-database.nixosModules.nix-index
 
     # Shared base
     ../../features/common/system.nix
@@ -42,26 +40,22 @@
     extraGroups = [ "networkmanager" "wheel" "audio" "video" "scanner" "lp" ];
   };
 
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users.hector = {
-      imports = [
-        ../../features/hardware/asus-nvidia/user.nix
-        ../../features/desktop/plasma/user.nix
-        ../../features/apps/audio-production/user.nix
-        ../../features/apps/gaming/user.nix
-        ../../features/apps/work-dev/user.nix
-        ../../features/apps/cli/user.nix
-        ../../features/apps/multimedia/user.nix
-      ];
-      custom.cli = {
-        gitUserName = "Hector Zelaya";
-        gitUserEmail = "inge.zelaya@gmail.com";
-      };
-      home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
-      home.stateVersion = "25.11";
+  home-manager.users.hector = {
+    imports = [
+      ../../features/hardware/asus-nvidia/user.nix
+      ../../features/desktop/plasma/user.nix
+      ../../features/apps/audio-production/user.nix
+      ../../features/apps/gaming/user.nix
+      ../../features/apps/work-dev/user.nix
+      ../../features/apps/cli/user.nix
+      ../../features/apps/multimedia/user.nix
+    ];
+    custom.cli = {
+      gitUserName = "Hector Zelaya";
+      gitUserEmail = "inge.zelaya@gmail.com";
     };
+    home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
+    home.stateVersion = "25.11";
   };
 
   system.stateVersion = "25.11";

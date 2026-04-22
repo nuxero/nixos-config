@@ -1,6 +1,11 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+    inputs.nix-index-database.nixosModules.nix-index
+  ];
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -29,5 +34,11 @@
     LC_PAPER = "es_SV.UTF-8";
     LC_TELEPHONE = "es_SV.UTF-8";
     LC_TIME = "es_SV.UTF-8";
+  };
+
+  # Home-manager defaults
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
   };
 }
