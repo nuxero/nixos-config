@@ -1,123 +1,41 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running 'nixos-help').
-
 { config, pkgs, inputs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
-      inputs.home-manager.nixosModules.home-manager
-      inputs.nix-index-database.nixosModules.nix-index
+  imports = [
+    ./hardware-configuration.nix
+    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
+    inputs.home-manager.nixosModules.home-manager
+    inputs.nix-index-database.nixosModules.nix-index
 
-      # System-level features
-      ../../features/hardware/asus-nvidia/system.nix
-      ../../features/hardware/bluetooth/system.nix
-      ../../features/hardware/printing/system.nix
-      ../../features/desktop/plasma/system.nix
-      ../../features/desktop/plymouth/system.nix
-      ../../features/apps/audio-production/system.nix
-      ../../features/apps/gaming/system.nix
-      (import ../../features/apps/work-dev/system.nix {
-        polkitOwners = [ "hector" ];
-      })
-    ];
+    # Shared base
+    ../../features/common/system.nix
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
+    # System-level features
+    ../../features/hardware/asus-nvidia/system.nix
+    ../../features/hardware/bluetooth/system.nix
+    ../../features/hardware/printing/system.nix
+    ../../features/desktop/plasma/system.nix
+    ../../features/desktop/plymouth/system.nix
+    ../../features/apps/audio-production/system.nix
+    ../../features/apps/gaming/system.nix
+    ../../features/apps/work-dev/system.nix
+    ../../features/debug/system.nix
+  ];
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # Monitor NVMe health (Samsung 990 EVO Plus has intermittent controller crashes).
-  services.smartd.enable = true;
-  environment.systemPackages = [ pkgs.smartmontools pkgs.lm_sensors ];
-
-  # TEMPORARY: Capture kernel panics that the journal misses.
-  # printk.always_kmsg_dump tells the kernel to write dmesg to pstore on panic.
-  # systemd-pstore archives /sys/fs/pstore/ on boot for later analysis.
-  # After a silent crash, check: ls /var/lib/systemd/pstore/ or journalctl -b 0 --grep pstore
-  # Remove once silent crashes are diagnosed.
-  boot.kernelParams = [ "printk.always_kmsg_dump=Y" ];
-  systemd.services.systemd-pstore.wantedBy = [ "multi-user.target" ];
-
-  # TEMPORARY: Log CPU/GPU/NVMe temps every 30s — survives hard power-off for post-crash analysis.
-  # Added to diagnose whether Apr 13 freezes are thermal or MES firmware bug.
-  # Remove once root cause is confirmed.
-  systemd.services.thermal-logger = {
-    description = "Log thermal sensor data";
-    after = [ "multi-user.target" ];
-    wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.coreutils ];
-    serviceConfig = {
-      Type = "simple";
-      Restart = "always";
-      ExecStart = pkgs.writeShellScript "thermal-logger" ''
-        read_sensor() {
-          for hw in /sys/class/hwmon/hwmon*/; do
-            [ "$(cat "''${hw}name" 2>/dev/null)" = "$1" ] && cat "''${hw}temp1_input" 2>/dev/null && return
-          done
-          echo "?"
-        }
-        while true; do
-          ts=$(date +%H:%M:%S)
-          echo "$ts cpu=$(read_sensor k10temp) gpu=$(read_sensor amdgpu) nvme=$(read_sensor nvme)" >> /var/log/thermal.log
-          sleep 30
-        done
-      '';
-    };
-  };
-  # Rotate thermal log — tmpfiles cleans entries older than 7d.
-  systemd.tmpfiles.rules = [ "f /var/log/thermal.log 0644 root root 7d" ];
-
-  # Automated Maintenance — keep 30d to ensure rollback generations survive
-  nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 30d"; };
-  nix.settings.auto-optimise-store = true;
-
   boot.initrd.luks.devices."luks-5c82c1ce-a9e8-4502-a767-baa1834b7b71".device = "/dev/disk/by-uuid/5c82c1ce-a9e8-4502-a767-baa1834b7b71";
 
-  # Enable TRIM on LUKS + ext4 for SSD longevity (Samsung 990 EVO Plus).
-  # allowDiscards passes TRIM through the LUKS layer; fstrim runs weekly.
   # TEMPORARILY DISABLED: Samsung NVMe controller crashes (CSTS=0x3) may be triggered by TRIM.
   # Re-enable once pcie_aspm.policy=performance is confirmed to fix the controller crashes.
   # boot.initrd.luks.devices."luks-372ebe08-549c-43f5-8c14-3181293a1380".allowDiscards = true;
   # services.fstrim.enable = true;
-  networking.hostName = "g14-laptop"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  networking.hostName = "g14-laptop";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  # 1Password polkit access
+  custom.work-dev.polkitOwners = [ "hector" ];
 
-  # Set your time zone.
-  time.timeZone = "America/El_Salvador";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "es_SV.UTF-8";
-    LC_IDENTIFICATION = "es_SV.UTF-8";
-    LC_MEASUREMENT = "es_SV.UTF-8";
-    LC_MONETARY = "es_SV.UTF-8";
-    LC_NAME = "es_SV.UTF-8";
-    LC_NUMERIC = "es_SV.UTF-8";
-    LC_PAPER = "es_SV.UTF-8";
-    LC_TELEPHONE = "es_SV.UTF-8";
-    LC_TIME = "es_SV.UTF-8";
-  };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.hector = {
     isNormalUser = true;
     description = "Hector Zelaya";
@@ -133,42 +51,18 @@
         ../../features/desktop/plasma/user.nix
         ../../features/apps/audio-production/user.nix
         ../../features/apps/gaming/user.nix
-        (import ../../features/apps/work-dev/user.nix {
-          gitUserName  = "Hector Zelaya";
-          gitUserEmail = "inge.zelaya@gmail.com";
-        })
-        #../../features/apps/kids/user.nix
+        ../../features/apps/work-dev/user.nix
+        ../../features/apps/cli/user.nix
+        ../../features/apps/multimedia/user.nix
       ];
+      custom.cli = {
+        gitUserName = "Hector Zelaya";
+        gitUserEmail = "inge.zelaya@gmail.com";
+      };
       home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
       home.stateVersion = "25.11";
     };
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
-
+  system.stateVersion = "25.11";
 }
