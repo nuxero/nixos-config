@@ -3,7 +3,9 @@
 {
   imports = [
     ./hardware-configuration.nix
-    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-amdgpu
+
+    # nixos-hardware: ASUS ROG Zephyrus G14 (2023, GA402X) — includes NVIDIA PRIME offload
+    inputs.nixos-hardware.nixosModules.asus-zephyrus-ga402x-nvidia
 
     # Shared base
     ../../features/common/system.nix
@@ -17,17 +19,13 @@
     ../../features/apps/audio-production/system.nix
     ../../features/apps/gaming/system.nix
     ../../features/apps/work-dev/system.nix
-    ../../features/debug/system.nix
   ];
 
+  # Latest kernel — recommended for ASUS ROG hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  boot.initrd.luks.devices."luks-5c82c1ce-a9e8-4502-a767-baa1834b7b71".device = "/dev/disk/by-uuid/5c82c1ce-a9e8-4502-a767-baa1834b7b71";
-
-  # TEMPORARILY DISABLED: Samsung NVMe controller crashes (CSTS=0x3) may be triggered by TRIM.
-  # Re-enable once pcie_aspm.policy=performance is confirmed to fix the controller crashes.
-  # boot.initrd.luks.devices."luks-372ebe08-549c-43f5-8c14-3181293a1380".allowDiscards = true;
-  # services.fstrim.enable = true;
+  # Disable PSR — prevents DMCUB errors and pageflip timeouts on Phoenix iGPU
+  boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" ];
 
   networking.hostName = "g14-laptop";
 
