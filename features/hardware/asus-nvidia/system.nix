@@ -14,4 +14,8 @@
   programs.rog-control-center.enable = true;
   services.power-profiles-daemon.enable = true;
   hardware.graphics.enable = true;
+
+  # Load amdgpu early so Plymouth can attach to the real DRM device from the
+  # start, avoiding the non-deterministic simpledrm→amdgpu fbcon takeover race.
+  boot.initrd.kernelModules = [ "amdgpu" ];
 }
