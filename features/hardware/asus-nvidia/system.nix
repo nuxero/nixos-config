@@ -7,15 +7,13 @@
 
   hardware.nvidia.dynamicBoost.enable = true;  # enables nvidia-powerd — supergfxd expects this service
   hardware.nvidia.powerManagement.enable = true;
-  hardware.nvidia.powerManagement.finegrained = false;  # supergfxd handles RTD3 PM; having both causes GSP firmware crash
-  hardware.nvidia.open = true;  # open kernel modules — revisit if GSP issues persist
-                                # WARNING: NVIDIA dropping proprietary modules post-580
+
+  # Proprietary kernel modules — the open modules (595.58.03) have a GSP firmware
+  # heartbeat bug that causes timeouts on every boot and can deadlock module loading.
+  # See: https://github.com/NVIDIA/open-gpu-kernel-modules/issues/1064
+  # Revisit when a driver version ships a fix for the GC6-exit heartbeat path.
+  hardware.nvidia.open = false;
 
   programs.rog-control-center.enable = true;
   services.power-profiles-daemon.enable = true;
-  hardware.graphics.enable = true;
-
-  # Load amdgpu early so Plymouth can attach to the real DRM device from the
-  # start, avoiding the non-deterministic simpledrm→amdgpu fbcon takeover race.
-  boot.initrd.kernelModules = [ "amdgpu" ];
 }

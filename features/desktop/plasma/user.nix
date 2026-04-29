@@ -5,5 +5,6 @@
     wl-clipboard
     libnotify
     gimp
+    kdePackages.filelight
   ];
 }
