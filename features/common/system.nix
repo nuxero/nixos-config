@@ -36,6 +36,10 @@
     LC_TIME = "es_SV.UTF-8";
   };
 
+  # nix-ld — compatibility layer for dynamically linked binaries
+  # (needed by kiro-cli, VS Code remote server, AppImages, etc.)
+  programs.nix-ld.enable = true;
+
   # Home-manager defaults
   home-manager = {
     useGlobalPkgs = true;
