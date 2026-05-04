@@ -4,4 +4,5 @@
   programs.steam.enable = true;
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
+  services.flatpak.enable = true;
 }
