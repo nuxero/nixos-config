@@ -10,6 +10,11 @@ in
       default = [];
       description = "Users to grant 1Password polkit access";
     };
+    dockerUsers = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "Users to add to the docker group";
+    };
   };
 
   config = {
@@ -19,5 +24,9 @@ in
       enable = true;
       polkitPolicyOwners = cfg.polkitOwners;
     };
+
+    # Docker for local k8s development (k3d, etc.)
+    virtualisation.docker.enable = true;
+    users.groups.docker.members = cfg.dockerUsers;
   };
 }

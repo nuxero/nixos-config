@@ -18,7 +18,7 @@ in
   config = {
     home.packages = with pkgs; [
       vim wget btop eza bat fastfetch
-      nh nix-output-monitor nvd
+      nh nix-output-monitor nvd poppler-utils
     ];
 
     programs.git = {

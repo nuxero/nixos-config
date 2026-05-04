@@ -23,6 +23,8 @@
 
   # 1Password polkit access
   custom.work-dev.polkitOwners = [ "hector" "erika" ];
+  # Docker users
+  custom.work-dev.dockerUsers = [ "hector" ];
 
   users.users.hector = {
     isNormalUser = true;
