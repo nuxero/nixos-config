@@ -24,6 +24,9 @@
   # Latest kernel — recommended for ASUS ROG hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Ensure internal keyboard (PS/2 via i8042) is available at LUKS password prompt
+  boot.initrd.availableKernelModules = [ "i8042" "atkbd" ];
+
   # Disable PSR — prevents DMCUB errors and pageflip timeouts on Phoenix iGPU
   boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" ];
 
