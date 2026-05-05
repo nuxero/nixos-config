@@ -6,5 +6,6 @@
     gopher64
     protonup-qt
     mangohud
+    starship-sf64
   ];
 }
