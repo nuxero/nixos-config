@@ -18,14 +18,15 @@
       # External display to the LEFT of the built-in panel
       # Format: name, resolution, position, scale
       monitor = [
-        "eDP-1,preferred,auto,1"           # internal: auto-position (right)
+        "eDP-1,preferred,auto,1.45"        # internal: 1.25x scale
         "DP-2,preferred,auto-left,1"       # external: left of internal
         ",preferred,auto,1"                # fallback for any other monitor
       ];
 
       # ── Input ───────────────────────────────────────────────────────────────
       input = {
-        kb_layout = "us";
+        kb_layout = "us,latam";
+        kb_options = "grp:alt_shift_toggle";  # Alt+Shift to switch layout
         follow_mouse = 1;
         natural_scroll = true;  # natural scroll for mouse
         touchpad = {
@@ -114,24 +115,56 @@
         "$mod, Space, exec, wofi --show drun --allow-images"
         "$mod, E, exec, thunar"
 
+        # ── Alt+Tab: window switcher across all workspaces ──────────────────
+        "ALT, Tab, exec, rofi -show window -show-icons"
+        "ALT SHIFT, Tab, exec, rofi -show window -show-icons"
+
+        # ── Pinned app launchers (Meta+1–9): launch or focus ────────────────
+        # These match the visual order in the wlr/taskbar
+        "$mod, 1, exec, ~/.config/hypr/scripts/launch-or-focus.sh slack"
+        "$mod, 2, exec, ~/.config/hypr/scripts/launch-or-focus.sh google-chrome-stable"
+        "$mod, 3, exec, ~/.config/hypr/scripts/launch-or-focus.sh firefox"
+        "$mod, 4, exec, ~/.config/hypr/scripts/launch-or-focus.sh kiro"
+        "$mod, 5, exec, ~/.config/hypr/scripts/launch-or-focus.sh kitty"
+        "$mod, 6, exec, ~/.config/hypr/scripts/launch-or-focus.sh thunar"
+        "$mod, 7, exec, ~/.config/hypr/scripts/launch-or-focus.sh 1password"
+        "$mod, 8, exec, ~/.config/hypr/scripts/launch-or-focus.sh cockos-reaper"
+        "$mod, 9, exec, ~/.config/hypr/scripts/launch-or-focus.sh exaile"
+
+        # ── Power menu ──────────────────────────────────────────────────────
+        "$mod SHIFT, Escape, exec, ~/.config/hypr/scripts/power-menu.sh"
+
         # ── Window management ───────────────────────────────────────────────
         "$mod, Q, killactive"
+        "ALT, F4, killactive"
         "$mod, F, fullscreen, 0"
         "$mod, V, togglefloating"
         "$mod, P, pseudo"
         "$mod, S, togglesplit"
+        "$mod, Prior, fullscreen, 1"       # Meta+PgUp: maximize
+        "$mod, Next, togglespecialworkspace, minimize"  # Meta+PgDown: minimize (scratchpad)
+        "$mod, D, exec, hyprctl dispatch togglespecialworkspace overview"  # Meta+D: show desktop
 
-        # ── Focus (vim-style + arrows) ──────────────────────────────────────
+        # ── Keyboard layout toggle ──────────────────────────────────────────
+        "$mod ALT, K, exec, hyprctl switchxkblayout all next"
+
+        # ── Lock screen ─────────────────────────────────────────────────────
+        "$mod, Escape, exec, hyprlock"
+        "CTRL ALT, L, exec, hyprlock"
+
+        # ── Focus (vim-style, matching Krohnkite) ───────────────────────────
         "$mod, H, movefocus, l"
         "$mod, L, movefocus, r"
         "$mod, K, movefocus, u"
         "$mod, J, movefocus, d"
-        "$mod, Left, movefocus, l"
-        "$mod, Right, movefocus, r"
-        "$mod, Up, movefocus, u"
-        "$mod, Down, movefocus, d"
 
-        # ── Move windows ────────────────────────────────────────────────────
+        # ── Window snapping (Meta+arrows, matching KDE) ─────────────────────
+        "$mod, Left, movewindow, l"
+        "$mod, Right, movewindow, r"
+        "$mod, Up, movewindow, u"
+        "$mod, Down, movewindow, d"
+
+        # ── Move windows (Shift+vim keys, matching Krohnkite) ──────────────
         "$mod SHIFT, H, movewindow, l"
         "$mod SHIFT, L, movewindow, r"
         "$mod SHIFT, K, movewindow, u"
@@ -176,9 +209,6 @@
 
         # ── Clipboard history ───────────────────────────────────────────────
         "$mod SHIFT, V, exec, cliphist list | wofi --dmenu | cliphist decode | wl-copy"
-
-        # ── Lock screen ─────────────────────────────────────────────────────
-        "$mod, Escape, exec, hyprlock"
 
         # ── Power profiles toggle ───────────────────────────────────────────
         "$mod SHIFT, P, exec, powerprofilesctl launch -- bash -c 'current=$(powerprofilesctl get); case $current in performance) powerprofilesctl set balanced;; balanced) powerprofilesctl set power-saver;; *) powerprofilesctl set performance;; esac; notify-send \"Power Profile\" \"$(powerprofilesctl get)\"'"
@@ -226,7 +256,7 @@
       ];
 
       # ── Window rules ────────────────────────────────────────────────────────
-      windowrulev2 = [
+      windowrule = [
         "float, class:^(pavucontrol)$"
         "float, class:^(blueman-manager)$"
         "float, class:^(nm-connection-editor)$"
@@ -242,7 +272,7 @@
   programs.waybar = {
     enable = true;
     systemd.enable = true;
-    systemd.target = "hyprland-session.target";
+    systemd.targets = [ "hyprland-session.target" ];
 
     settings = {
       mainBar = {
@@ -251,11 +281,26 @@
         height = 34;
         spacing = 4;
 
-        modules-left = [ "hyprland/workspaces" "hyprland/submap" ];
+        modules-left = [
+          "hyprland/workspaces"
+          "custom/sep"
+          "custom/app1"
+          "custom/app2"
+          "custom/app3"
+          "custom/app4"
+          "custom/app5"
+          "custom/app6"
+          "custom/app7"
+          "custom/app8"
+          "custom/app9"
+          "custom/sep2"
+          "wlr/taskbar"
+        ];
         modules-center = [ "hyprland/window" ];
         modules-right = [
           "tray"
           "idle_inhibitor"
+          "hyprland/language"
           "pulseaudio"
           "network"
           "bluetooth"
@@ -264,13 +309,80 @@
           "clock"
         ];
 
+        # ── Pinned app launchers (Meta+1–9) ─────────────────────────────────
+        "custom/sep" = { format = "│"; tooltip = false; };
+        "custom/sep2" = { format = "│"; tooltip = false; };
+
+        "custom/app1" = {
+          format = "󰍡";
+          tooltip-format = "1: Slack";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh slack";
+        };
+        "custom/app2" = {
+          format = "";
+          tooltip-format = "2: Chrome";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh google-chrome-stable";
+        };
+        "custom/app3" = {
+          format = "";
+          tooltip-format = "3: Firefox";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh firefox";
+        };
+        "custom/app4" = {
+          format = "󰘐";
+          tooltip-format = "4: Kiro";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh kiro";
+        };
+        "custom/app5" = {
+          format = "";
+          tooltip-format = "5: Terminal";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh kitty";
+        };
+        "custom/app6" = {
+          format = "󰉋";
+          tooltip-format = "6: Files";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh thunar";
+        };
+        "custom/app7" = {
+          format = "󰌋";
+          tooltip-format = "7: 1Password";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh 1password";
+        };
+        "custom/app8" = {
+          format = "󰎆";
+          tooltip-format = "8: Reaper";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh cockos-reaper";
+        };
+        "custom/app9" = {
+          format = "󰝚";
+          tooltip-format = "9: Exaile";
+          on-click = "~/.config/hypr/scripts/launch-or-focus.sh exaile";
+        };
+
         "hyprland/workspaces" = {
           format = "{icon}";
           on-click = "activate";
+          all-outputs = true;
           format-icons = {
             active = "●";
             default = "○";
           };
+        };
+
+        "wlr/taskbar" = {
+          format = "{icon}";
+          icon-size = 18;
+          tooltip-format = "{title}";
+          on-click = "activate";
+          on-click-middle = "close";
+          all-outputs = true;
+        };
+
+        "hyprland/language" = {
+          format = "󰌌 {}";
+          format-en = "EN";
+          format-es = "LATAM";
+          on-click = "hyprctl switchxkblayout all next";
         };
 
         "hyprland/window" = {
@@ -368,9 +480,39 @@
         color: #89b4fa;
       }
 
+      #custom-sep, #custom-sep2 {
+        color: #45475a;
+        padding: 0 4px;
+      }
+
+      #custom-app1, #custom-app2, #custom-app3, #custom-app4,
+      #custom-app5, #custom-app6, #custom-app7, #custom-app8, #custom-app9 {
+        padding: 0 6px;
+        color: #bac2de;
+      }
+
+      #custom-app1:hover, #custom-app2:hover, #custom-app3:hover, #custom-app4:hover,
+      #custom-app5:hover, #custom-app6:hover, #custom-app7:hover, #custom-app8:hover,
+      #custom-app9:hover {
+        color: #89b4fa;
+      }
+
       #clock, #battery, #network, #bluetooth, #pulseaudio,
-      #power-profiles-daemon, #tray, #idle-inhibitor {
+      #power-profiles-daemon, #tray, #idle-inhibitor, #language {
         padding: 0 10px;
+      }
+
+      #taskbar button {
+        padding: 0 4px;
+      }
+
+      #taskbar button.active {
+        background-color: rgba(137, 180, 250, 0.2);
+        border-radius: 4px;
+      }
+
+      #language {
+        color: #a6e3a1;
       }
 
       #battery.warning {
@@ -389,19 +531,30 @@
   };
 
   # ── Hyprpaper (wallpaper) ───────────────────────────────────────────────────
-  # NOTE: hyprpaper does NOT expand ~, must use absolute paths
+  # Symlink wallpapers to a path without spaces (avoids potential parsing issues)
+  home.file.".config/hypr/wallpapers/zelda.jpg".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg";
+  home.file.".config/hypr/wallpapers/wallhaven.jpg".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg";
+
   services.hyprpaper = {
     enable = true;
     settings = {
-      ipc = "on";
-      splash = false;
       preload = [
-        "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
-        "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
+        "/home/hector/.config/hypr/wallpapers/zelda.jpg"
+        "/home/hector/.config/hypr/wallpapers/wallhaven.jpg"
       ];
       wallpaper = [
-        "eDP-1,/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
-        ",/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
+        {
+          monitor = "eDP-1";
+          path = "/home/hector/.config/hypr/wallpapers/zelda.jpg";
+        }
+        {
+          monitor = "";
+          path = "/home/hector/.config/hypr/wallpapers/wallhaven.jpg";
+        }
       ];
     };
   };
@@ -449,7 +602,7 @@
       };
 
       background = [{
-        path = "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg";
+        path = "/home/hector/.config/hypr/wallpapers/zelda.jpg";
         blur_passes = 3;
         blur_size = 8;
       }];
@@ -512,6 +665,7 @@
 
     # App launcher
     wofi                   # application launcher
+    rofi-wayland           # window switcher + power menu
 
     # System tray apps
     blueman                # bluetooth manager (tray)
@@ -521,8 +675,8 @@
     swayosd                # on-screen display for vol/brightness
 
     # File manager (lightweight — no KDE deps)
-    xfce.thunar
-    xfce.thunar-volman     # removable media management
+    thunar
+    thunar-volman          # removable media management
 
     # Terminal
     kitty
@@ -531,9 +685,19 @@
     libnotify              # notify-send
     wlsunset               # night light / blue light filter
     polkit_gnome           # polkit authentication agent
+    jq                     # JSON parsing (used by launch-or-focus script)
   ];
 
   # ── Wofi config ─────────────────────────────────────────────────────────────
+  xdg.configFile."hypr/scripts/launch-or-focus.sh" = {
+    source = ./scripts/launch-or-focus.sh;
+    executable = true;
+  };
+  xdg.configFile."hypr/scripts/power-menu.sh" = {
+    source = ./scripts/power-menu.sh;
+    executable = true;
+  };
+
   xdg.configFile."wofi/style.css".text = ''
     window {
       margin: 0px;
