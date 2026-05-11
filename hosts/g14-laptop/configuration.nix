@@ -61,5 +61,16 @@
     home.stateVersion = "25.11";
   };
 
+  # ── Specialisation: Hyprland (battery-optimized) ───────────────────────────
+  # Select at boot via systemd-boot menu → "NixOS (hyprland)"
+  specialisation.hyprland.configuration = {
+    imports = [ ../../features/desktop/hyprland/system.nix ];
+
+    # Add Hyprland user-level config to home-manager
+    home-manager.users.hector = {
+      imports = [ ../../features/desktop/hyprland/user.nix ];
+    };
+  };
+
   system.stateVersion = "25.11";
 }
