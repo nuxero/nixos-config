@@ -21,17 +21,20 @@
 
   # Workaround: USB-C DP Alt Mode not negotiated at boot on left port (AMD iGPU).
   # nvidia-modeset probes AMD-owned DP connectors during init and disrupts the
-  # UCSI Alt Mode handshake.  Reloading ucsi_acpi after the display manager is
-  # up forces a clean re-negotiation so the external display is detected without
-  # a manual replug.
-  # See: https://gist.github.com/gornostal/ec270bf2d5a4380ed556c4a6011df149
+  # UCSI Alt Mode handshake.  After the display manager is up we force amdgpu to
+  # re-probe all DP connectors, which re-triggers link training and detects the
+  # external display without a manual cable replug.
   systemd.services.usbc-dp-workaround = {
-    description = "Reload UCSI to fix USB-C DisplayPort Alt Mode detection";
+    description = "Force AMD DP connector reprobe for USB-C display detection";
     after = [ "display-manager.service" ];
+    requires = [ "display-manager.service" ];
     wantedBy = [ "graphical.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash -c '${pkgs.kmod}/bin/modprobe -r ucsi_acpi typec_ucsi && sleep 1 && ${pkgs.kmod}/bin/modprobe ucsi_acpi typec_ucsi'";
+      # Wait for DP link to stabilize after nvidia-modeset finishes probing,
+      # then force amdgpu to re-detect all DP connectors.
+      ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'for conn in /sys/class/drm/card1-DP-*/status; do echo detect > \"$$conn\"; done'";
       RemainAfterExit = true;
     };
   };
