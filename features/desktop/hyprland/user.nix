@@ -104,6 +104,7 @@
         "wl-paste --type image --watch cliphist store"
         "swayosd-server"
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+        "gnome-keyring-daemon --start --components=secrets"
       ];
 
       # ── Key bindings ────────────────────────────────────────────────────────
@@ -256,14 +257,15 @@
       ];
 
       # ── Window rules ────────────────────────────────────────────────────────
+      # Leading space needed: HM generates "windowrule=X" but Hyprland needs "windowrule = X"
       windowrule = [
-        "float, class:^(pavucontrol)$"
-        "float, class:^(blueman-manager)$"
-        "float, class:^(nm-connection-editor)$"
-        "float, class:^(.blueman-manager-wrapped)$"
-        "float, title:^(Picture-in-Picture)$"
-        "pin, title:^(Picture-in-Picture)$"
-        "float, class:^(thunar)$, title:^(File Operation Progress)$"
+        " float, class:^(pavucontrol)$"
+        " float, class:^(blueman-manager)$"
+        " float, class:^(nm-connection-editor)$"
+        " float, class:^(.blueman-manager-wrapped)$"
+        " float, title:^(Picture-in-Picture)$"
+        " pin, title:^(Picture-in-Picture)$"
+        " float, class:^(thunar)$, title:^(File Operation Progress)$"
       ];
     };
   };
@@ -310,53 +312,71 @@
         ];
 
         # ── Pinned app launchers (Meta+1–9) ─────────────────────────────────
-        "custom/sep" = { format = "│"; tooltip = false; };
-        "custom/sep2" = { format = "│"; tooltip = false; };
+        "custom/sep" = { format = "│"; tooltip = false; interval = "once"; exec = "echo ."; };
+        "custom/sep2" = { format = "│"; tooltip = false; interval = "once"; exec = "echo ."; };
 
         "custom/app1" = {
           format = "󰍡";
           tooltip-format = "1: Slack";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh slack";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app2" = {
           format = "";
           tooltip-format = "2: Chrome";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh google-chrome-stable";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app3" = {
           format = "";
           tooltip-format = "3: Firefox";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh firefox";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app4" = {
           format = "󰘐";
           tooltip-format = "4: Kiro";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh kiro";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app5" = {
           format = "";
           tooltip-format = "5: Terminal";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh kitty";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app6" = {
           format = "󰉋";
           tooltip-format = "6: Files";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh thunar";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app7" = {
           format = "󰌋";
           tooltip-format = "7: 1Password";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh 1password";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app8" = {
           format = "󰎆";
           tooltip-format = "8: Reaper";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh cockos-reaper";
+          interval = "once";
+          exec = "echo .";
         };
         "custom/app9" = {
           format = "󰝚";
           tooltip-format = "9: Exaile";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh exaile";
+          interval = "once";
+          exec = "echo .";
         };
 
         "hyprland/workspaces" = {
@@ -686,6 +706,7 @@
     wlsunset               # night light / blue light filter
     polkit_gnome           # polkit authentication agent
     jq                     # JSON parsing (used by launch-or-focus script)
+    gnome-keyring          # secrets store (Slack, Chrome passwords, etc.)
   ];
 
   # ── Wofi config ─────────────────────────────────────────────────────────────

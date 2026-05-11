@@ -59,4 +59,7 @@
 
   # ── PAM: unlock gnome-keyring on login (for WiFi passwords, etc.) ───────────
   security.pam.services.greetd.enableGnomeKeyring = true;
+
+  # ── Gnome Keyring: needed for Slack, Chrome, etc. to persist auth tokens ────
+  services.gnome.gnome-keyring.enable = true;
 }
