@@ -24,13 +24,15 @@
   # Latest kernel — recommended for ASUS ROG hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # Prevent amdgpu from loading in initrd — the simpledrm-to-amdgpu DRM handoff
-  # during Plymouth's LUKS prompt intermittently breaks keyboard input.
-  # amdgpu loads normally after LUKS unlock; no impact on GPU functionality.
-  hardware.amdgpu.initrd.enable = false;
-
   # Disable PSR — prevents DMCUB errors and pageflip timeouts on Phoenix iGPU
-  boot.kernelParams = [ "amdgpu.dcdebugmask=0x10" ];
+  # i8042 params — fix intermittent keyboard dead on cold boot (known ASUS EC issue)
+  boot.kernelParams = [
+    "amdgpu.dcdebugmask=0x10"
+    "i8042.reset"
+    "i8042.nomux"
+    "i8042.nopnp"
+    "i8042.noloop"
+  ];
 
   networking.hostName = "g14-laptop";
 
