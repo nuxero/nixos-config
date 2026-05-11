@@ -15,15 +15,19 @@
 
     settings = {
       # ── Monitor configuration ───────────────────────────────────────────────
-      # Auto-detect and arrange monitors; override per-host if needed
+      # External display to the LEFT of the built-in panel
+      # Format: name, resolution, position, scale
       monitor = [
-        ",preferred,auto,1"  # fallback: any monitor at native res
+        "eDP-1,preferred,auto,1"           # internal: auto-position (right)
+        "DP-2,preferred,auto-left,1"       # external: left of internal
+        ",preferred,auto,1"                # fallback for any other monitor
       ];
 
       # ── Input ───────────────────────────────────────────────────────────────
       input = {
         kb_layout = "us";
         follow_mouse = 1;
+        natural_scroll = true;  # natural scroll for mouse
         touchpad = {
           natural_scroll = true;
           tap-to-click = true;
@@ -88,8 +92,8 @@
       };
 
       # ── Autostart ───────────────────────────────────────────────────────────
+      # NOTE: waybar is started via systemd (programs.waybar.systemd.enable)
       exec-once = [
-        "waybar"
         "hyprpaper"
         "hypridle"
         "mako"
@@ -107,8 +111,8 @@
       bind = [
         # ── App launchers ───────────────────────────────────────────────────
         "$mod, Return, exec, kitty"
-        "$mod, D, exec, wofi --show drun --allow-images"
-        "$mod, E, exec, dolphin"
+        "$mod, Space, exec, wofi --show drun --allow-images"
+        "$mod, E, exec, thunar"
 
         # ── Window management ───────────────────────────────────────────────
         "$mod, Q, killactive"
@@ -133,29 +137,33 @@
         "$mod SHIFT, K, movewindow, u"
         "$mod SHIFT, J, movewindow, d"
 
-        # ── Workspaces ──────────────────────────────────────────────────────
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
+        # ── Workspaces (Meta + F1–F12) ──────────────────────────────────────
+        "$mod, F1, workspace, 1"
+        "$mod, F2, workspace, 2"
+        "$mod, F3, workspace, 3"
+        "$mod, F4, workspace, 4"
+        "$mod, F5, workspace, 5"
+        "$mod, F6, workspace, 6"
+        "$mod, F7, workspace, 7"
+        "$mod, F8, workspace, 8"
+        "$mod, F9, workspace, 9"
+        "$mod, F10, workspace, 10"
+        "$mod, F11, workspace, 11"
+        "$mod, F12, workspace, 12"
 
-        # ── Move to workspace ───────────────────────────────────────────────
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 10"
+        # ── Move to workspace (Meta + Shift + F1–F12) ───────────────────────
+        "$mod SHIFT, F1, movetoworkspace, 1"
+        "$mod SHIFT, F2, movetoworkspace, 2"
+        "$mod SHIFT, F3, movetoworkspace, 3"
+        "$mod SHIFT, F4, movetoworkspace, 4"
+        "$mod SHIFT, F5, movetoworkspace, 5"
+        "$mod SHIFT, F6, movetoworkspace, 6"
+        "$mod SHIFT, F7, movetoworkspace, 7"
+        "$mod SHIFT, F8, movetoworkspace, 8"
+        "$mod SHIFT, F9, movetoworkspace, 9"
+        "$mod SHIFT, F10, movetoworkspace, 10"
+        "$mod SHIFT, F11, movetoworkspace, 11"
+        "$mod SHIFT, F12, movetoworkspace, 12"
 
         # ── Special workspace (scratchpad) ──────────────────────────────────
         "$mod, grave, togglespecialworkspace, magic"
@@ -199,6 +207,24 @@
         "$mod, mouse:273, resizewindow"
       ];
 
+      # ── Workspace-to-monitor binding ─────────────────────────────────────────
+      # 1–5 → external (DP-2, left), 6–10 → internal (eDP-1, right)
+      # When DP-2 is disconnected, Hyprland moves all workspaces to eDP-1 automatically.
+      workspace = [
+        "1, monitor:DP-2, default:true"
+        "2, monitor:DP-2"
+        "3, monitor:DP-2"
+        "4, monitor:DP-2"
+        "5, monitor:DP-2"
+        "6, monitor:eDP-1, default:true"
+        "7, monitor:eDP-1"
+        "8, monitor:eDP-1"
+        "9, monitor:eDP-1"
+        "10, monitor:eDP-1"
+        "11, monitor:eDP-1"
+        "12, monitor:eDP-1"
+      ];
+
       # ── Window rules ────────────────────────────────────────────────────────
       windowrulev2 = [
         "float, class:^(pavucontrol)$"
@@ -207,8 +233,7 @@
         "float, class:^(.blueman-manager-wrapped)$"
         "float, title:^(Picture-in-Picture)$"
         "pin, title:^(Picture-in-Picture)$"
-        "float, class:^(org.kde.dolphin)$, title:^(Progress Dialog)$"
-        "float, class:^(org.kde.dolphin)$, title:^(Copying)$"
+        "float, class:^(thunar)$, title:^(File Operation Progress)$"
       ];
     };
   };
@@ -364,18 +389,19 @@
   };
 
   # ── Hyprpaper (wallpaper) ───────────────────────────────────────────────────
+  # NOTE: hyprpaper does NOT expand ~, must use absolute paths
   services.hyprpaper = {
     enable = true;
     settings = {
       ipc = "on";
       splash = false;
       preload = [
-        "~/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
-        "~/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
+        "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
+        "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
       ];
       wallpaper = [
-        "eDP-1,~/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
-        ",~/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
+        "eDP-1,/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg"
+        ",/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/wallhaven-4lqqqq.jpg"
       ];
     };
   };
@@ -423,7 +449,7 @@
       };
 
       background = [{
-        path = "~/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg";
+        path = "/home/hector/Dropbox (Maestral)/HECTOR DANIEL/wallpapers/the-legend-of-zelda-breath-of-the-wild-1600x900-nintendo-switch-wii-u-5803.jpg";
         blur_passes = 3;
         blur_size = 8;
       }];
@@ -468,7 +494,7 @@
       padding = "12";
       default-timeout = 5000;
       max-visible = 3;
-      layer = "overlay";
+      layer = "top";
     };
   };
 
@@ -494,9 +520,9 @@
     # OSD
     swayosd                # on-screen display for vol/brightness
 
-    # File manager (shared with Plasma)
-    kdePackages.dolphin
-    kdePackages.qtsvg      # SVG icons in dolphin
+    # File manager (lightweight — no KDE deps)
+    xfce.thunar
+    xfce.thunar-volman     # removable media management
 
     # Terminal
     kitty

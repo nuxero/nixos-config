@@ -51,6 +51,9 @@
     networkmanagerapplet # nm-applet for WiFi tray
   ];
 
+  # ── SwayOSD: install udev rules so brightness/volume OSD works without the warning ─
+  services.udev.packages = [ pkgs.swayosd ];
+
   # ── Security: polkit agent (needed for privileged actions) ──────────────────
   security.polkit.enable = true;
 
