@@ -665,7 +665,7 @@
 
     # App launcher
     wofi                   # application launcher
-    rofi-wayland           # window switcher + power menu
+    rofi                   # window switcher + power menu
 
     # System tray apps
     blueman                # bluetooth manager (tray)
