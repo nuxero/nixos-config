@@ -23,14 +23,14 @@ in
 
     programs.git = {
       enable = true;
-      userName = cfg.gitUserName;
-      userEmail = cfg.gitUserEmail;
-      aliases = {
-        ci = "commit";
-        co = "checkout";
-        s = "status";
-      };
-      extraConfig = {
+      settings = {
+        user.name = cfg.gitUserName;
+        user.email = cfg.gitUserEmail;
+        alias = {
+          ci = "commit";
+          co = "checkout";
+          s = "status";
+        };
         init.defaultBranch = "main";
         pull.rebase = true;
         core.editor = "vim";

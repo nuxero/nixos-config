@@ -17,6 +17,7 @@
 
   programs.firefox = {
     enable = true;
+    configPath = ".mozilla/firefox";
     nativeMessagingHosts = [
       pkgs.kdePackages.plasma-browser-integration
     ];
