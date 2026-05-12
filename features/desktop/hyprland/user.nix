@@ -165,6 +165,10 @@
         "$mod, Up, movewindow, u"
         "$mod, Down, movewindow, d"
 
+        # ── Move window to other monitor ────────────────────────────────────
+        "$mod SHIFT, Left, movewindow, mon:l"
+        "$mod SHIFT, Right, movewindow, mon:r"
+
         # ── Move windows (Shift+vim keys, matching Krohnkite) ──────────────
         "$mod SHIFT, H, movewindow, l"
         "$mod SHIFT, L, movewindow, r"
@@ -309,6 +313,7 @@
           "power-profiles-daemon"
           "battery"
           "clock"
+          "custom/power"
         ];
 
         # ── Pinned app launchers (Meta+1–9) ─────────────────────────────────
@@ -375,6 +380,14 @@
           format = "󰝚";
           tooltip-format = "9: Exaile";
           on-click = "~/.config/hypr/scripts/launch-or-focus.sh exaile";
+          interval = "once";
+          exec = "echo .";
+        };
+
+        "custom/power" = {
+          format = "⏻";
+          tooltip-format = "Power Menu";
+          on-click = "~/.config/hypr/scripts/power-menu.sh";
           interval = "once";
           exec = "echo .";
         };
@@ -533,6 +546,15 @@
 
       #language {
         color: #a6e3a1;
+      }
+
+      #custom-power {
+        color: #f38ba8;
+        padding: 0 10px;
+      }
+
+      #custom-power:hover {
+        color: #eba0ac;
       }
 
       #battery.warning {
