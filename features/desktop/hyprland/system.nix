@@ -57,9 +57,10 @@
   # ── Security: polkit agent (needed for privileged actions) ──────────────────
   security.polkit.enable = true;
 
-  # ── PAM: unlock gnome-keyring on login (for WiFi passwords, etc.) ───────────
-  security.pam.services.greetd.enableGnomeKeyring = true;
-
-  # ── Gnome Keyring: needed for Slack, Chrome, etc. to persist auth tokens ────
-  services.gnome.gnome-keyring.enable = true;
+  # ── PAM: unlock KWallet on login (shared with Plasma for credential persistence) ─
+  # forceRun is needed because tuigreet is a TUI — PAM doesn't detect a graphical session
+  security.pam.services.greetd.kwallet = {
+    enable = true;
+    forceRun = true;
+  };
 }

@@ -92,6 +92,15 @@
         vfr = true;  # variable frame rate — major battery saver
       };
 
+      # ── Cursor ──────────────────────────────────────────────────────────────
+      cursor = {
+        no_hardware_cursors = 2;  # auto (disable when tearing)
+        enable_hyprcursor = true;
+        inactive_timeout = 5;    # hide cursor after 5s idle
+        hide_on_key_press = true;
+        hide_on_touch = true;
+      };
+
       # ── Autostart ───────────────────────────────────────────────────────────
       # NOTE: waybar is started via systemd (programs.waybar.systemd.enable)
       exec-once = [
@@ -104,7 +113,7 @@
         "wl-paste --type image --watch cliphist store"
         "swayosd-server"
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
-        "gnome-keyring-daemon --start --components=secrets"
+        "${pkgs.kdePackages.kwallet-pam}/libexec/pam_kwallet_init"
       ];
 
       # ── Key bindings ────────────────────────────────────────────────────────
@@ -261,17 +270,18 @@
       ];
 
       # ── Window rules ────────────────────────────────────────────────────────
-      # Leading space needed: HM generates "windowrule=X" but Hyprland needs "windowrule = X"
-      windowrule = [
-        " float, class:^(pavucontrol)$"
-        " float, class:^(blueman-manager)$"
-        " float, class:^(nm-connection-editor)$"
-        " float, class:^(.blueman-manager-wrapped)$"
-        " float, title:^(Picture-in-Picture)$"
-        " pin, title:^(Picture-in-Picture)$"
-        " float, class:^(thunar)$, title:^(File Operation Progress)$"
-      ];
+      # Using extraConfig because HM generates "windowrule=X" but Hyprland needs "windowrule = X"
     };
+
+    extraConfig = ''
+      windowrule = float on, match:class ^(pavucontrol)$
+      windowrule = float on, match:class ^(blueman-manager)$
+      windowrule = float on, match:class ^(nm-connection-editor)$
+      windowrule = float on, match:class ^(.blueman-manager-wrapped)$
+      windowrule = float on, match:title ^(Picture-in-Picture)$
+      windowrule = pin on, match:title ^(Picture-in-Picture)$
+      windowrule = float on, match:class ^(thunar)$, match:title ^(File Operation Progress)$
+    '';
   };
 
   # ── Waybar ──────────────────────────────────────────────────────────────────
@@ -289,17 +299,6 @@
 
         modules-left = [
           "hyprland/workspaces"
-          "custom/sep"
-          "custom/app1"
-          "custom/app2"
-          "custom/app3"
-          "custom/app4"
-          "custom/app5"
-          "custom/app6"
-          "custom/app7"
-          "custom/app8"
-          "custom/app9"
-          "custom/sep2"
           "wlr/taskbar"
         ];
         modules-center = [ "hyprland/window" ];
@@ -315,74 +314,6 @@
           "clock"
           "custom/power"
         ];
-
-        # ── Pinned app launchers (Meta+1–9) ─────────────────────────────────
-        "custom/sep" = { format = "│"; tooltip = false; interval = "once"; exec = "echo ."; };
-        "custom/sep2" = { format = "│"; tooltip = false; interval = "once"; exec = "echo ."; };
-
-        "custom/app1" = {
-          format = "󰍡";
-          tooltip-format = "1: Slack";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh slack";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app2" = {
-          format = "";
-          tooltip-format = "2: Chrome";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh google-chrome-stable";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app3" = {
-          format = "";
-          tooltip-format = "3: Firefox";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh firefox";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app4" = {
-          format = "󰘐";
-          tooltip-format = "4: Kiro";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh kiro";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app5" = {
-          format = "";
-          tooltip-format = "5: Terminal";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh kitty";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app6" = {
-          format = "󰉋";
-          tooltip-format = "6: Files";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh thunar";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app7" = {
-          format = "󰌋";
-          tooltip-format = "7: 1Password";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh 1password";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app8" = {
-          format = "󰎆";
-          tooltip-format = "8: Reaper";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh cockos-reaper";
-          interval = "once";
-          exec = "echo .";
-        };
-        "custom/app9" = {
-          format = "󰝚";
-          tooltip-format = "9: Exaile";
-          on-click = "~/.config/hypr/scripts/launch-or-focus.sh exaile";
-          interval = "once";
-          exec = "echo .";
-        };
 
         "custom/power" = {
           format = "⏻";
@@ -513,23 +444,6 @@
         color: #89b4fa;
       }
 
-      #custom-sep, #custom-sep2 {
-        color: #45475a;
-        padding: 0 4px;
-      }
-
-      #custom-app1, #custom-app2, #custom-app3, #custom-app4,
-      #custom-app5, #custom-app6, #custom-app7, #custom-app8, #custom-app9 {
-        padding: 0 6px;
-        color: #bac2de;
-      }
-
-      #custom-app1:hover, #custom-app2:hover, #custom-app3:hover, #custom-app4:hover,
-      #custom-app5:hover, #custom-app6:hover, #custom-app7:hover, #custom-app8:hover,
-      #custom-app9:hover {
-        color: #89b4fa;
-      }
-
       #clock, #battery, #network, #bluetooth, #pulseaudio,
       #power-profiles-daemon, #tray, #idle-inhibitor, #language {
         padding: 0 10px;
@@ -590,11 +504,11 @@
       ];
       wallpaper = [
         {
-          monitor = "eDP-1";
+          monitor = "";
           path = "/home/hector/.config/hypr/wallpapers/zelda.jpg";
         }
         {
-          monitor = "";
+          monitor = "eDP-1";
           path = "/home/hector/.config/hypr/wallpapers/wallhaven.jpg";
         }
       ];
@@ -728,14 +642,9 @@
     wlsunset               # night light / blue light filter
     polkit_gnome           # polkit authentication agent
     jq                     # JSON parsing (used by launch-or-focus script)
-    gnome-keyring          # secrets store (Slack, Chrome passwords, etc.)
   ];
 
   # ── Wofi config ─────────────────────────────────────────────────────────────
-  xdg.configFile."hypr/scripts/launch-or-focus.sh" = {
-    source = ./scripts/launch-or-focus.sh;
-    executable = true;
-  };
   xdg.configFile."hypr/scripts/power-menu.sh" = {
     source = ./scripts/power-menu.sh;
     executable = true;
@@ -784,5 +693,12 @@
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     MOZ_ENABLE_WAYLAND = "1";
+    # Tell Electron apps to use KWallet (same as Plasma) for credential persistence
+    ELECTRON_EXTRA_LAUNCH_ARGS = "--password-store=kwallet6";
+    # Cursor theme for GTK/Qt/Wayland apps
+    XCURSOR_THEME = "zelda-cursors";
+    XCURSOR_SIZE = "24";
+    HYPRCURSOR_THEME = "zelda-cursors";
+    HYPRCURSOR_SIZE = "24";
   };
 }
