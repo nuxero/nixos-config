@@ -28,5 +28,10 @@ in
     # Docker for local k8s development (k3d, etc.)
     virtualisation.docker.enable = true;
     users.groups.docker.members = cfg.dockerUsers;
+
+    # for extra hosts in /etc/hosts
+    networking.extraHosts = ''
+      127.0.0.1 app.local
+    '';
   };
 }
