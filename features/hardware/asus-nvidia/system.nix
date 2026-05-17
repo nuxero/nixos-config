@@ -19,26 +19,6 @@
   # Revisit when a driver version ships a fix for the GC6-exit heartbeat path.
   hardware.nvidia.open = false;
 
-  # Workaround: USB-C DP Alt Mode not negotiated at boot on left port (AMD iGPU).
-  # nvidia-modeset probes AMD-owned DP connectors during init and disrupts the
-  # UCSI Alt Mode handshake.  After the display manager is up we force amdgpu to
-  # re-probe all DP connectors, which re-triggers link training and detects the
-  # external display without a manual cable replug.
-  systemd.services.usbc-dp-workaround = {
-    description = "Force AMD DP connector reprobe for USB-C display detection";
-    after = [ "display-manager.service" ];
-    requires = [ "display-manager.service" ];
-    wantedBy = [ "graphical.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      # Wait for DP link to stabilize after nvidia-modeset finishes probing,
-      # then force amdgpu to re-detect all DP connectors.
-      ExecStartPre = "${pkgs.coreutils}/bin/sleep 5";
-      ExecStart = "${pkgs.bash}/bin/bash -c 'for conn in /sys/class/drm/card1-DP-*/status; do echo detect > \"$$conn\"; done'";
-      RemainAfterExit = true;
-    };
-  };
-
   programs.rog-control-center.enable = true;
   services.power-profiles-daemon.enable = true;
 }
