@@ -5,7 +5,11 @@
   # The module already sets: asusd, supergfxd, PRIME offload, bus IDs,
   # modesetting, nouveau blacklist, videoDrivers, and kernel quirks.
 
-  hardware.nvidia.dynamicBoost.enable = true;  # enables nvidia-powerd — supergfxd expects this service
+  # Dynamic Boost (nvidia-powerd) is disabled — the service hangs during
+  # activation on the GA402X because the old process becomes unkillable
+  # (stuck in a kernel driver call) and blocks multi-user.target for ~6 min.
+  # See: https://discourse.nixos.org/t/nvidia-powerd-service-fails-no-matter-what-i-try/54640
+  hardware.nvidia.dynamicBoost.enable = false;
 
   # DO NOT enable powerManagement — the nixos-hardware module explicitly
   # warns this is unreliable on the RTX 4060 Mobile and causes kernel
