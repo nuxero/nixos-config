@@ -16,6 +16,10 @@
 
   nix.settings.auto-optimise-store = true;
 
+  # Build parallelism — one derivation at a time, using all CPU cores
+  nix.settings.max-jobs = 1;
+  nix.settings.cores = 0;  # 0 = use all available cores (passes -j$(nproc) to make)
+
   # Networking
   networking.networkmanager.enable = true;
 
