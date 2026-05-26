@@ -13,6 +13,26 @@ in
       type = lib.types.str;
       description = "Git user.email";
     };
+    gitSmtpServer = lib.mkOption {
+      type = lib.types.str;
+      default = "smtp.gmail.com";
+      description = "SMTP server for git send-email";
+    };
+    gitSmtpServerPort = lib.mkOption {
+      type = lib.types.int;
+      default = 587;
+      description = "SMTP server port for git send-email";
+    };
+    gitSmtpEncryption = lib.mkOption {
+      type = lib.types.str;
+      default = "tls";
+      description = "SMTP encryption method for git send-email (tls or ssl)";
+    };
+    gitSmtpUser = lib.mkOption {
+      type = lib.types.str;
+      default = cfg.gitUserEmail;
+      description = "SMTP user for git send-email (defaults to gitUserEmail)";
+    };
   };
 
   config = {
@@ -23,6 +43,7 @@ in
 
     programs.git = {
       enable = true;
+      package = pkgs.gitFull;
       settings = {
         user.name = cfg.gitUserName;
         user.email = cfg.gitUserEmail;
@@ -34,6 +55,13 @@ in
         init.defaultBranch = "main";
         pull.rebase = true;
         core.editor = "vim";
+        sendemail = {
+          smtpServer = cfg.gitSmtpServer;
+          smtpServerPort = cfg.gitSmtpServerPort;
+          smtpEncryption = cfg.gitSmtpEncryption;
+          smtpUser = cfg.gitSmtpUser;
+          confirm = "auto";
+        };
       };
     };
 

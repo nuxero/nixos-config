@@ -49,7 +49,7 @@
     ];
     custom.cli = {
       gitUserName = "Hector Zelaya";
-      gitUserEmail = "inge.zelaya@gmail.com";
+      gitUserEmail = "hector@hectorzelaya.dev";
     };
     home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
     home.stateVersion = "25.11";

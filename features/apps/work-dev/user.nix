@@ -9,7 +9,6 @@
     google-chrome
     dbeaver-bin
     awscli2
-    git
     kiro
     kiro-cli
     sweethome3d.application
