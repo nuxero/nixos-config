@@ -1,10 +1,10 @@
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index c1e4a6ce96317..67bce23783ff1 100644
+index a1cfa436344a..3b0767cc47fd 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -667,6 +667,9 @@
- #define USB_DEVICE_ID_UGCI_FLYING	0x0020
- #define USB_DEVICE_ID_UGCI_FIGHTING	0x0030
+@@ -683,6 +683,9 @@
+ #define USB_DEVICE_ID_HARMONIX_WII_RB3_KEYBOARD	        0x3330
+ #define USB_DEVICE_ID_HARMONIX_WII_RB3_MPA_KEYBOARD_MODE	0x3338
  
 +#define USB_VENDOR_ID_HORI			0x0f0d
 +#define USB_DEVICE_ID_HORI_WIRELESS_SWITCH_PAD	0x00f6
@@ -13,7 +13,7 @@ index c1e4a6ce96317..67bce23783ff1 100644
  #define USB_PRODUCT_ID_HP_ELITE_PRESENTER_MOUSE_464A		0x464a
  #define USB_PRODUCT_ID_HP_LOGITECH_OEM_USB_OPTICAL_MOUSE_0A4A	0x0a4a
 diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
-index 29008c2cc5304..5bbeed1f1315e 100644
+index 29008c2cc530..2d37ddeffdb6 100644
 --- a/drivers/hid/hid-nintendo.c
 +++ b/drivers/hid/hid-nintendo.c
 @@ -316,6 +316,7 @@ enum joycon_ctlr_type {
@@ -100,13 +100,13 @@ index 29008c2cc5304..5bbeed1f1315e 100644
 -			hid_warn(hdev, "Analog stick positions may be inaccurate\n");
 +			hid_info(hdev, "using default cal for licensed controller\n");
 +			joycon_use_default_calibration(hdev,
-+				&ctlr->left_stick_cal_x,
-+				&ctlr->left_stick_cal_y,
-+				"left", 0);
++						       &ctlr->left_stick_cal_x,
++						       &ctlr->left_stick_cal_y,
++						       "left", 0);
 +			joycon_use_default_calibration(hdev,
-+				&ctlr->right_stick_cal_x,
-+				&ctlr->right_stick_cal_y,
-+				"right", 0);
++						       &ctlr->right_stick_cal_x,
++						       &ctlr->right_stick_cal_y,
++						       "right", 0);
 +		} else {
 +			ret = joycon_request_calibration(ctlr);
 +			if (ret) {
@@ -120,7 +120,7 @@ index 29008c2cc5304..5bbeed1f1315e 100644
  		}
  	}
  
-@@ -2527,8 +2571,12 @@ static int joycon_init(struct hid_device *hdev)
+@@ -2527,8 +2571,13 @@ static int joycon_init(struct hid_device *hdev)
  		/* Enable the IMU */
  		ret = joycon_enable_imu(ctlr);
  		if (ret) {
@@ -128,6 +128,7 @@ index 29008c2cc5304..5bbeed1f1315e 100644
 -			goto out_unlock;
 +			if (ctlr->ctlr_type == JOYCON_CTLR_TYPE_LIC_PRO) {
 +				hid_dbg(hdev, "IMU enable failed for licensed controller, continuing\n");
++				ret = 0;
 +			} else {
 +				hid_err(hdev, "Failed to enable the IMU; ret=%d\n", ret);
 +				goto out_unlock;
@@ -135,7 +136,7 @@ index 29008c2cc5304..5bbeed1f1315e 100644
  		}
  	}
  
-@@ -2543,8 +2591,12 @@ static int joycon_init(struct hid_device *hdev)
+@@ -2543,8 +2592,13 @@ static int joycon_init(struct hid_device *hdev)
  		/* Enable rumble */
  		ret = joycon_enable_rumble(ctlr);
  		if (ret) {
@@ -143,6 +144,7 @@ index 29008c2cc5304..5bbeed1f1315e 100644
 -			goto out_unlock;
 +			if (ctlr->ctlr_type == JOYCON_CTLR_TYPE_LIC_PRO) {
 +				hid_dbg(hdev, "rumble enable failed for licensed controller, continuing\n");
++				ret = 0;
 +			} else {
 +				hid_err(hdev, "Failed to enable rumble; ret=%d\n", ret);
 +				goto out_unlock;
@@ -150,7 +152,7 @@ index 29008c2cc5304..5bbeed1f1315e 100644
  		}
  	}
  
-@@ -2813,6 +2865,8 @@ static const struct hid_device_id nintendo_hid_devices[] = {
+@@ -2813,6 +2867,8 @@ static const struct hid_device_id nintendo_hid_devices[] = {
  			 USB_DEVICE_ID_NINTENDO_GENCON) },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_NINTENDO,
  			 USB_DEVICE_ID_NINTENDO_N64CON) },
