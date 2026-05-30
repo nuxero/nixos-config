@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ ... }:
 
 {
   # Overrides / additions on top of nixos-hardware ga402x-nvidia module
