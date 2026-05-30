@@ -23,6 +23,10 @@
   # Revisit when a driver version ships a fix for the GC6-exit heartbeat path.
   hardware.nvidia.open = false;
 
+  # Battery-saver boot specialisation: boots with dGPU fully disabled (iGPU only).
+  # Select in systemd-boot menu → "NixOS (battery-saver)"
+  hardware.nvidia.primeBatterySaverSpecialisation = true;
+
   programs.rog-control-center.enable = true;
   services.power-profiles-daemon.enable = true;
 }
