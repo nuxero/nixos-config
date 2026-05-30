@@ -20,6 +20,7 @@
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
+          home-manager.nixosModules.home-manager
           ./hosts/g14-laptop/configuration.nix
         ];
       };
@@ -27,6 +28,7 @@
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
+          home-manager.nixosModules.home-manager
           ./hosts/dell-laptop/configuration.nix
         ];
       };
