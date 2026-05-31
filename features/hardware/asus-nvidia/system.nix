@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   # Overrides / additions on top of nixos-hardware ga402x-nvidia module
@@ -27,6 +27,13 @@
   # Battery-saver boot specialisation: boots with dGPU fully disabled (iGPU only).
   # Select in systemd-boot menu → "NixOS (battery-saver)"
   hardware.nvidia.primeBatterySaverSpecialisation = true;
+
+  # Workaround: nixos-hardware's prime.nix doesn't disable enableOffloadCmd inside
+  # the battery-saver specialisation, triggering a nixpkgs assertion.
+  # Force it off in the specialisation until upstream fixes this.
+  specialisation.battery-saver.configuration = {
+    hardware.nvidia.prime.offload.enableOffloadCmd = lib.mkForce false;
+  };
 
   programs.rog-control-center.enable = true;
   services.power-profiles-daemon.enable = true;
