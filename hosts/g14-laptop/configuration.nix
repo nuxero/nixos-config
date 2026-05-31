@@ -57,7 +57,6 @@
 
   home-manager.users.hector = {
     imports = [
-      ../../features/hardware/asus-nvidia/user.nix
       ../../features/desktop/plasma/user.nix
       ../../features/apps/audio-production/user.nix
       ../../features/apps/gaming/user.nix
