@@ -5,6 +5,7 @@
     exaile
     vlc
     yt-dlp
+    shotcut
   ];
 
   programs.obs-studio = {
