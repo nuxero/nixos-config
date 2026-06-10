@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     wl-clipboard
     libnotify
-    gimp
+    krita
     kdePackages.filelight
   ];
 }
