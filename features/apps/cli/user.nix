@@ -39,6 +39,11 @@ in
     home.packages = with pkgs; [
       vim wget btop eza bat fastfetch
       nh nix-output-monitor nvd poppler-utils
+
+      # Base runtimes — for uvx, npx, standalone MCP servers, one-off scripts
+      python3
+      uv
+      nodejs
     ];
 
     programs.git = {
