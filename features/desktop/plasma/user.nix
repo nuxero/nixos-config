@@ -6,5 +6,6 @@
     libnotify
     krita
     kdePackages.filelight
+    unrar
   ];
 }

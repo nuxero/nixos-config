@@ -7,7 +7,7 @@
     protonup-qt
     mangohud
     eden
-    retroarch
+    retroarch-full
     dolphin-emu
   ];
 }
