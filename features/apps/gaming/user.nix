@@ -6,6 +6,8 @@
     gopher64
     protonup-qt
     mangohud
-    # starship-sf64
+    eden
+    retroarch
+    dolphin-emu
   ];
 }
