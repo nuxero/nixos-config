@@ -3,11 +3,9 @@
 {
   home.packages = with pkgs; [
     heroic
-    gopher64
-    protonup-qt
-    mangohud
+    #protonup-qt
+    #mangohud
     eden
     retroarch-full
-    dolphin-emu
   ];
 }

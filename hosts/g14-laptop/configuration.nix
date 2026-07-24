@@ -25,12 +25,12 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   
   # patch for hori gamepad
-  #boot.kernelPatches = [
-  #  {
-  #    name = "hid-nintendo-hori-wireless-switch-pad";
-  #    patch = ../../patches/hid-nintendo-hori.patch;
-  #  }
-  #];
+  boot.kernelPatches = [
+    {
+      name = "hid-nintendo-hori-wireless-switch-pad";
+      patch = ../../patches/hid-nintendo-hori.patch;
+    }
+  ];
 
   # Disable PSR — prevents DMCUB errors and pageflip timeouts on Phoenix iGPU
   # i8042 params — fix intermittent keyboard dead on cold boot (known ASUS EC issue)
@@ -71,18 +71,6 @@
     home.sessionVariables.NH_FLAKE = "/home/hector/nixos-config";
     home.stateVersion = "25.11";
   };
-
-  # WIP commenting for now. Having issues with shared login sessions with Slack, Chrome, Wifi. These are not being persisted in Hyprland
-  # ── Specialisation: Hyprland (battery-optimized) ───────────────────────────
-  # Select at boot via systemd-boot menu → "NixOS (hyprland)"
-  #specialisation.hyprland.configuration = {
-  #  imports = [ ../../features/desktop/hyprland/system.nix ];
-
-    # Add Hyprland user-level config to home-manager
-  #  home-manager.users.hector = {
-  #    imports = [ ../../features/desktop/hyprland/user.nix ];
-  #  };
-  #};
 
   system.stateVersion = "25.11";
 }
