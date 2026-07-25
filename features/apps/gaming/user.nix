@@ -17,4 +17,8 @@
       ppsspp          # PSP
     ]))
   ];
+
+  home.file.".config/retroarch/shaders/shaders_slang" = {
+    source = "${pkgs.libretro-shaders-slang}/share/libretro/shaders/shaders_slang";
+  };
 }
