@@ -6,6 +6,7 @@
     #protonup-qt
     #mangohud
     eden
+    rclone # for syncing game saves from saves server
     (retroarch.withCores (cores: with cores; [
       melondsds       # Nintendo DS
       gambatte        # Game Boy / Game Boy Color
