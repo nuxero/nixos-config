@@ -19,6 +19,7 @@
     ../../features/apps/audio-production/system.nix
     ../../features/apps/gaming/system.nix
     ../../features/apps/work-dev/system.nix
+    ../../features/apps/webdav/system.nix
   ];
 
   # Latest kernel — recommended for ASUS ROG hardware support

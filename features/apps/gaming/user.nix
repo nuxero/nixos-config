@@ -16,6 +16,8 @@
       snes9x          # SNES
       genesis-plus-gx # Mega Drive / Genesis
       ppsspp          # PSP
+      fbneo           # Arcade (FinalBurn Neo)
+      mame2003        # Arcade (MAME 2003)
     ]))
   ];
 
