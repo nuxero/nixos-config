@@ -1,30 +1,61 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Enable davfs2 support (provides mount.davfs helper)
-  services.davfs2.enable = true;
+  environment.systemPackages = [ pkgs.rclone ];
 
-  # Mount the WebDAV resource automatically on first access
+  # Allow non-root users to access the FUSE mount
+  programs.fuse.userAllowOther = true;
+
+  # rclone mount via native NixOS fileSystems
+  # Uses the standard rclone config at /etc/rclone/saves.conf
+  # which defines a [saves] remote pointing to the WebDAV server.
   fileSystems."/mnt/saves" = {
-    device = "https://saves.hectorzelaya.dev";
-    fsType = "davfs";
+    device = "saves:";
+    fsType = "rclone";
     options = [
-      "rw"
-      "_netdev"               # wait for network before mounting
-      "x-systemd.automount"   # mount on first access (doesn't block boot)
-      "noauto"                # don't mount at early boot
-      "uid=hector"
-      "gid=users"
+      "nodev"
+      "nofail"
+      "allow_other"
+      "args2env"
+      "config=/etc/rclone/saves.conf"
+      # VFS cache: full read/write with local caching
+      "vfs-cache-mode=full"
+      "vfs-cache-max-size=2G"            # max local disk used by cache
+      "vfs-cache-max-age=24h"            # evict files not accessed in 24h
+      "vfs-read-chunk-size=32M"          # stream in 32M chunks (fast playback start)
+      "vfs-read-chunk-size-limit=off"    # no limit on chunk growth
+      "vfs-write-back=5s"                # delay uploads slightly
+      # Directory listing cache
+      "dir-cache-time=5m"
+      # Buffer for streaming reads
+      "buffer-size=64M"
+      # File ownership
+      "uid=1000"
+      "gid=100"
+      "umask=002"
     ];
   };
 
-  # Credentials are stored statefully in /etc/davfs2/secrets
-  # Before first rebuild, create the file:
+  # One-time setup:
   #
-  #   sudo mkdir -p /etc/davfs2
-  #   sudo bash -c 'cat > /etc/davfs2/secrets << EOF
-  #   /mnt/saves  your-username  your-password
+  # If you already have a "saves" remote in your user rclone config, copy it
+  # directly (rclone config show redacts passwords — use the raw file):
+  #
+  #   sudo mkdir -p /etc/rclone
+  #   grep -A 10 '^\[saves\]' ~/.config/rclone/rclone.conf | sudo tee /etc/rclone/saves.conf > /dev/null
+  #   sudo chmod 600 /etc/rclone/saves.conf
+  #
+  # Or create it from scratch:
+  #
+  #   sudo mkdir -p /etc/rclone
+  #   rclone obscure 'your-plain-password'   # copy the output
+  #   sudo bash -c 'cat > /etc/rclone/saves.conf << EOF
+  #   [saves]
+  #   type = webdav
+  #   url = https://saves.hectorzelaya.dev
+  #   vendor = other
+  #   user = your-username
+  #   pass = your-obscured-password
   #   EOF'
-  #   sudo chmod 600 /etc/davfs2/secrets
-  #   sudo chown root:root /etc/davfs2/secrets
+  #   sudo chmod 600 /etc/rclone/saves.conf
 }

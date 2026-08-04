@@ -83,7 +83,7 @@ Add a new entry under `nixosConfigurations`:
 Before the first rebuild, perform any manual setup required by the features
 you're enabling. See the [One-Time Setup](#one-time-setup) section below.
 
-This avoids failed services on first boot (e.g. davfs2 needing credentials
+This avoids failed services on first boot (e.g. rclone mount needing credentials
 that don't exist yet).
 
 ### 6. Apply the flake configuration
@@ -110,22 +110,44 @@ sudo nixos-rebuild switch --flake /home/hector/nixos-config#$(hostname)
 
 These steps must be done manually once per machine after the first rebuild.
 
-### WebDAV credentials (machines using `features/apps/webdav`)
+### WebDAV mount credentials (machines using `features/apps/webdav`)
 
-davfs2 reads credentials from `/etc/davfs2/secrets`. Create it before the first
-rebuild that includes the webdav feature:
+The WebDAV folder at `/mnt/saves` is mounted via rclone using a native NixOS
+`fileSystems` declaration. Credentials are stored in an rclone config file.
+
+1. Obscure your password (rclone requires this format):
 
 ```bash
-sudo mkdir -p /etc/davfs2
-sudo bash -c 'cat > /etc/davfs2/secrets << EOF
-/mnt/saves  YOUR_WEBDAV_USERNAME  YOUR_WEBDAV_PASSWORD
-EOF'
-sudo chmod 600 /etc/davfs2/secrets
-sudo chown root:root /etc/davfs2/secrets
+nix-shell -p rclone --run "rclone obscure 'your-plain-password'"
 ```
 
-The mount at `/mnt/saves` uses `x-systemd.automount` — it will connect on first
-access rather than blocking boot if the server is unreachable.
+2. Create the rclone config file with the output:
+
+```bash
+sudo mkdir -p /etc/rclone
+sudo bash -c 'cat > /etc/rclone/saves.conf << EOF
+[saves]
+type = webdav
+url = https://saves.hectorzelaya.dev
+vendor = other
+user = your-username
+pass = the-obscured-output-from-step-1
+EOF'
+sudo chmod 600 /etc/rclone/saves.conf
+```
+
+Or if you already have a `saves` remote in your user rclone config, copy it
+directly (note: `rclone config show` redacts passwords, so copy the raw file):
+
+```bash
+sudo mkdir -p /etc/rclone
+grep -A 10 '^\[saves\]' ~/.config/rclone/rclone.conf | sudo tee /etc/rclone/saves.conf > /dev/null
+sudo chmod 600 /etc/rclone/saves.conf
+```
+
+The mount streams files on demand — playback and browsing start immediately.
+Files are cached locally (up to 2 GB, evicted after 24h of inactivity) so
+your disk stays clean.
 
 ## Maintenance
 
