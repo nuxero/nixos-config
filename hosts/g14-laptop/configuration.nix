@@ -24,14 +24,6 @@
 
   # Latest kernel — recommended for ASUS ROG hardware support
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  
-  # patch for hori gamepad
-  boot.kernelPatches = [
-    {
-      name = "hid-nintendo-hori-wireless-switch-pad";
-      patch = ../../patches/hid-nintendo-hori.patch;
-    }
-  ];
 
   # Disable PSR — prevents DMCUB errors and pageflip timeouts on Phoenix iGPU
   # i8042 params — fix intermittent keyboard dead on cold boot (known ASUS EC issue)
