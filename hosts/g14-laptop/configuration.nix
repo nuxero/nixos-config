@@ -37,6 +37,11 @@
 
   networking.hostName = "g14-laptop";
 
+  # Allow non-root access to NVIDIA USB devices (e.g. Switch RCM mode)
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0955", MODE="0666"
+  '';
+
   # 1Password polkit access
   custom.work-dev.polkitOwners = [ "hector" ];
   # Docker users
