@@ -187,6 +187,8 @@ in
       python3
       uv
       nodejs
+
+      mermaid-cli
     ];
 
     programs.git = {
