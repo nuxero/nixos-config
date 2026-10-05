@@ -197,6 +197,65 @@ Or pick a specific generation from the systemd-boot menu at boot time.
 2. If the feature has a `user.nix`, import it under `home-manager.users.<name>.imports`.
 3. Rebuild.
 
+## Hardware Quirks
+
+### External USB webcam "blinking" feed (`g14-laptop`)
+
+The external XIFT USB webcam (`6210:e904`, enumerates as `/dev/video4`) shows a
+rhythmic "blink" in the video feed. The built-in Sonix camera (`3277:0018`) is
+unaffected.
+
+**Root cause: mains flicker, not autofocus.** The blink is the rolling shutter
+beating against 60 Hz AC lighting. This camera's firmware only exposes
+`auto_exposure=1 (Manual Mode)` — there is no auto-exposure or working
+autofocus mode to "hunt", so the fix is to match the anti-flicker frequency and
+pick a fixed exposure that is a whole multiple of the mains half-cycle.
+
+A `services.udev.extraRules` rule in `hosts/g14-laptop/configuration.nix` sets:
+
+| Control | Value | Why |
+|---------|-------|-----|
+| `power_line_frequency` | `2` (60 Hz) | Anti-flicker for El Salvador mains |
+| `auto_exposure` | `1` (Manual) | Only mode this firmware accepts |
+| `exposure_time_absolute` | `250` | 3 × 8.33 ms half-cycle at 60 Hz (100 µs UVC units). Keep a multiple of 83: 83/167/250/333… |
+| `gain` | `64` | Brightens the fixed-exposure image; higher adds noise |
+| `focus_automatic_continuous` + `focus_absolute` | `0`, `150` | Sharp at desk distance |
+| `white_balance_automatic` + `white_balance_temperature` | `0`, `4` | This device's WB range is only `1..5`, **not** Kelvin |
+
+```
+SUBSYSTEM=="video4linux", ATTRS{idVendor}=="6210", ATTRS{idProduct}=="e904", RUN+="${pkgs.v4l-utils}/bin/v4l2-ctl -d $devnode --set-ctrl power_line_frequency=2,focus_automatic_continuous=0,focus_absolute=150,auto_exposure=1,exposure_time_absolute=250,gain=64,white_balance_automatic=0,white_balance_temperature=4"
+```
+
+Control order matters: `auto_exposure` must switch to Manual before
+`exposure_time_absolute` becomes writable (same for white balance). The rule
+requires `pkgs.v4l-utils` in `environment.systemPackages` (also declared in the
+same host config).
+
+Verify it applied after a rebuild by replugging the camera and checking the
+controls:
+
+```bash
+nix-shell -p v4l-utils --run 'v4l2-ctl -d /dev/video4 --list-ctrls'
+# expect: power_line_frequency=2, auto_exposure=1, exposure_time_absolute=250,
+#         gain=64, focus_absolute=150, white_balance_temperature=4
+```
+
+**Tuning:**
+
+- *Still flickering?* Keep `exposure_time_absolute` on the 83-unit grid
+  (83/167/250/333…). Off-grid values bring the blink back.
+- *Too dark?* Step exposure up first (`333`, `417`), then raise `gain`.
+- *Too bright / noisy?* Lower `gain` (e.g. `32`), then exposure.
+- *Re-tune focus for a different distance* — sweep `focus_absolute`
+  (`0` = far … `1023` = near) live:
+
+```bash
+nix-shell -p v4l-utils --run '
+for f in 0 60 120 180 250 350 500 700 1023; do
+  v4l2-ctl -d /dev/video4 --set-ctrl focus_absolute=$f; echo "focus_absolute=$f"; sleep 3
+done'
+```
+
 ## Notes
 
 - `stateVersion` should be set once when a machine is first installed and never changed.
