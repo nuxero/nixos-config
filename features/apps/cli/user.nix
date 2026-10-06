@@ -189,6 +189,7 @@ in
       nodejs
 
       mermaid-cli
+      android-tools
     ];
 
     programs.git = {
