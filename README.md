@@ -165,6 +165,13 @@ nix flake update nixpkgs
 
 Then rebuild to apply.
 
+Alternative use the AI-assisted helpers. These require `kiro-cli` for the natural language summary:
+
+```bash
+os-fetch # download and build updated packages
+os-apply # apply the changes to next boot
+```
+
 ### Garbage collection
 
 Remove old generations and free disk space:
