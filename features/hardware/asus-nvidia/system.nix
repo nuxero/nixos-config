@@ -28,7 +28,7 @@
   # Select in systemd-boot menu → "NixOS (battery-saver)"
   hardware.nvidia.primeBatterySaverSpecialisation = true;
 
-  # Workaround: nixos-hardware's prime.nix doesn't disable enableOffloadCmd inside
+  # WORKAROUND: nixos-hardware's prime.nix doesn't disable enableOffloadCmd inside
   # the battery-saver specialisation, triggering a nixpkgs assertion.
   # Force it off in the specialisation until upstream fixes this.
   specialisation.battery-saver.configuration = {
