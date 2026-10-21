@@ -8,7 +8,7 @@
     slack
     google-chrome
     dbeaver-bin
-    awscli2
+    awscli2 ssm-session-manager-plugin
     kiro
     kiro-cli
     sweethome3d.application
