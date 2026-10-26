@@ -11,7 +11,6 @@
 
   # Make the boot process completely silent so the splash screen displays cleanly
   boot.consoleLogLevel = 0;
-  boot.initrd.verbose = false;
   
   # Hide the kernel text logs
   boot.kernelParams = [
