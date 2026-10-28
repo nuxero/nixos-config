@@ -12,6 +12,7 @@
     kiro
     kiro-cli
     sweethome3d.application
+    gh
   ];
 
   programs.firefox = {
