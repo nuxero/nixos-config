@@ -48,5 +48,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
+    # Make flake inputs available to home-manager modules (e.g. inputs.llm-agents)
+    extraSpecialArgs = { inherit inputs; };
   };
 }
