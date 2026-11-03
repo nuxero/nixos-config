@@ -206,6 +206,12 @@ in
         init.defaultBranch = "main";
         pull.rebase = true;
         core.editor = "vim";
+        # Force git's ssh to read only the user config and skip the
+        # system-wide /etc/ssh/ssh_config. Inside a nix shell (flake +
+        # direnv) the store/etc ownership is remapped to nobody:nobody, so
+        # OpenSSH rejects the systemd ssh-proxy Include with "Bad owner or
+        # permissions". Bypassing the system config avoids that check.
+        core.sshCommand = "ssh -F ${config.home.homeDirectory}/.ssh/config";
         sendemail = {
           smtpServer = cfg.gitSmtpServer;
           smtpServerPort = cfg.gitSmtpServerPort;
