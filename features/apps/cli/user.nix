@@ -190,6 +190,10 @@ in
 
       mermaid-cli
       android-tools
+
+      # AppImage launcher, with libgpg-error added to the FHS env so AppImages
+      # that need libgpg-error.so.0 (e.g. eglantine) can find it.
+      (appimage-run.override { extraPkgs = pkgs: [ pkgs.libgpg-error ]; })
     ];
 
     programs.git = {
