@@ -19,6 +19,7 @@
       fbneo           # Arcade (FinalBurn Neo)
       mame2003        # Arcade (MAME 2003)
     ]))
+    cemu
   ];
 
   home.file.".config/retroarch/shaders/shaders_slang" = {
