@@ -9,12 +9,10 @@
     google-chrome
     dbeaver-bin
     awscli2 ssm-session-manager-plugin
-    kiro
+    kiro vscode
     kiro-cli
     sweethome3d.application
     gh
-    # Claude Desktop (from numtide/llm-agents.nix, built against its pinned nixpkgs)
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
   ];
 
   programs.firefox = {
