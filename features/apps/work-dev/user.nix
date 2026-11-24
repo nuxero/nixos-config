@@ -11,7 +11,7 @@
     awscli2 ssm-session-manager-plugin
     kiro vscode
     kiro-cli
-    sweethome3d.application
+    sweethome3d
     gh
   ];
 
