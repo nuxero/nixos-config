@@ -42,27 +42,36 @@
 
   # Allow non-root access to NVIDIA USB devices (e.g. Switch RCM mode)
   #
-  # External XIFT Web Camera (6210:e904): the firmware ships with the
-  # anti-flicker filter set to 50 Hz, but El Salvador mains is 60 Hz.
-  # Currently testing ONLY power_line_frequency=2 (60 Hz), leaving everything
-  # else on firmware defaults (auto white balance, continuous autofocus,
-  # exposure_time_absolute=78, gain=0) so the camera adjusts itself.
-  # Note: this camera has no hardware auto-exposure (firmware rejects any
-  # auto_exposure value other than 1 = Manual Mode).
+  # External XIFT Web Camera (6210:e904). Only autofocus is changed: continuous
+  # autofocus is turned off and focus fixed at desk distance (focus_absolute
+  # 0..1023, higher = closer). Everything else stays on firmware defaults
+  # (auto-exposure, auto white balance, 50 Hz anti-flicker) so the image
+  # follows daylight changes.
   #
-  # If flicker persists, escalate one step at a time by appending to --set-ctrl:
-  #   2. exposure_time_absolute=83   brightness pulsing/rolling bands
-  #      (83 = one 8.33 ms 60 Hz half-cycle in 100 us units; multiples: 167/250/333)
-  #   3. focus_automatic_continuous=0,focus_absolute=150   image goes soft/sharp
-  #   4. white_balance_automatic=0,white_balance_temperature=4   tint shifts
-  #      (temperature range is only 1..5, NOT Kelvin)
+  # What we learned:
+  #   - The "heartbeat" pulsing was continuous autofocus hunting; bright window
+  #     light confuses it.
+  #   - The firmware defaults the anti-flicker filter to 50 Hz, but El Salvador
+  #     mains is 60 Hz. If light-source blinking appears under room lights, add
+  #     power_line_frequency=2 (60 Hz) so auto-exposure picks flicker-safe steps.
+  #   - The camera DOES have auto-exposure: it powers up with auto_exposure=0
+  #     (auto). The driver refuses to switch back to auto once set to Manual
+  #     (1), so never set auto_exposure here; restoring auto needs a replug or
+  #     a USB reset (echo 0, then 1, to /sys/bus/usb/devices/<port>/authorized).
+  #   - Manual exposure stops the blinking but is a poor fit: a fixed value
+  #     gets too dark as window daylight changes during the day.
+  #
+  # If problems come back, append to --set-ctrl:
+  #   - image looks soft: adjust focus_absolute (lower = farther).
+  #   - color tint shifting: add white_balance_automatic=0,white_balance_temperature=4
+  #     (range is only 1..5, NOT Kelvin).
+  #   - Last resort for light-source blinking: auto_exposure=1,exposure_time_absolute=83
+  #     (83 = one 8.33 ms 60 Hz half-cycle in 100 us units; multiples 167/250/333),
+  #     plus gain to brighten. This gives up auto brightness.
   # Order matters: disable an auto control before setting its manual value.
-  #
-  # Previous full-manual rule (kept for reference):
-  # SUBSYSTEM=="video4linux", ATTRS{idVendor}=="6210", ATTRS{idProduct}=="e904", RUN+="${pkgs.v4l-utils}/bin/v4l2-ctl -d $devnode --set-ctrl power_line_frequency=2,focus_automatic_continuous=0,focus_absolute=150,auto_exposure=1,exposure_time_absolute=250,gain=64,white_balance_automatic=0,white_balance_temperature=4"
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="0955", MODE="0666"
-    SUBSYSTEM=="video4linux", ATTRS{idVendor}=="6210", ATTRS{idProduct}=="e904", RUN+="${pkgs.v4l-utils}/bin/v4l2-ctl -d $devnode --set-ctrl power_line_frequency=2"
+    SUBSYSTEM=="video4linux", ATTRS{idVendor}=="6210", ATTRS{idProduct}=="e904", RUN+="${pkgs.v4l-utils}/bin/v4l2-ctl -d $devnode --set-ctrl focus_automatic_continuous=0,focus_absolute=150"
   '';
 
   # 1Password polkit access
